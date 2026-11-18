@@ -37,20 +37,50 @@ jobs:
           cd screenshots
           maestro --device "$device" test --format junit --test-output-dir . --output ipad.xml ../e2e/maestro/ipad-first-run.yaml
           xcrun simctl io "$device" screenshot D-iPad-library.png
-      - name: Download the model through onboarding and exercise local inference
+      - name: Download the model through onboarding
+        id: onboarding
         if: inputs.local_chat
         working-directory: screenshots
         run: |
-          maestro --device "$IPAD_UDID" test --format junit --output download.xml ../e2e/maestro/ipad-download.yaml
+          maestro --device "$IPAD_UDID" test --format junit --test-output-dir . --output download.xml ../e2e/maestro/ipad-download.yaml
           container=$(xcrun simctl get_app_container "$IPAD_UDID" com.linvisxie.d data)
           filename=gemma-3-1b-it-Q4_K_M.gguf
-          for attempt in {1..100}; do
+          for attempt in {1..80}; do
             model=$(find "$container/Documents" -name "$filename" -size 806058240c -print -quit)
             if [ -n "$model" ]; then break; fi
+            if (( attempt % 6 == 0 )); then
+              if maestro --device "$IPAD_UDID" hierarchy | grep -q 'download-banner-retry'; then break; fi
+            fi
             sleep 4
           done
           if [ -z "$model" ]; then echo "::error::The onboarding model did not finish downloading."; exit 1; fi
           echo "8d78d9d059a7605c401c105e169e0b08e9f0edc603ceb842f1c4bbb834296d17  $model" | shasum -a 256 -c -
+      - name: Inspect a failed simulator model transfer
+        if: failure() && steps.onboarding.outcome == 'failure'
+        working-directory: screenshots
+        run: |
+          xcrun simctl io "$IPAD_UDID" screenshot D-iPad-download-failure.png
+          df -h .
+          xcrun simctl spawn "$IPAD_UDID" log show --last 7m --style compact --predicate 'process == "PocketPal" OR process == "nsurlsessiond"' | grep -Ei 'fail|NSURLError|HTTP [45][0-9][0-9]|disk space' | sed -E 's@https?://[^[:space:]]+@[URL]@g' | tail -45 || true
+      - name: Exercise local inference and restored history
+        if: ${{ !cancelled() && inputs.local_chat && (steps.onboarding.outcome == 'success' || steps.onboarding.outcome == 'failure') }}
+        working-directory: screenshots
+        env:
+          DOWNLOAD_RESULT: ${{ steps.onboarding.outcome }}
+        run: |
+          container=$(xcrun simctl get_app_container "$IPAD_UDID" com.linvisxie.d data)
+          if [ "$DOWNLOAD_RESULT" = failure ]; then
+            # Keep the onboarding failure visible while testing inference independently.
+            xcrun simctl terminate "$IPAD_UDID" com.linvisxie.d || true
+            repo=lmstudio-community/gemma-3-1b-it-GGUF
+            filename=gemma-3-1b-it-Q4_K_M.gguf
+            destination="$container/Documents/models/hf/$repo"
+            mkdir -p "$destination"
+            curl --fail --location --retry 2 --max-time 360 "https://huggingface.co/$repo/resolve/main/$filename?download=true" --output "$RUNNER_TEMP/test-model.gguf"
+            echo "8d78d9d059a7605c401c105e169e0b08e9f0edc603ceb842f1c4bbb834296d17  $RUNNER_TEMP/test-model.gguf" | shasum -a 256 -c -
+            mv "$RUNNER_TEMP/test-model.gguf" "$destination/$filename"
+            xcrun simctl launch "$IPAD_UDID" com.linvisxie.d
+          fi
           maestro --device "$IPAD_UDID" test --format junit --test-output-dir . --output inference.xml ../e2e/maestro/ipad-local-chat.yaml
           xcrun simctl io "$IPAD_UDID" screenshot D-iPad-conversation.png
           python3 ../e2e/maestro/check-ipad-reply.py "$container" > local-reply.json
