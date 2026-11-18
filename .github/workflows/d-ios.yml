@@ -2,6 +2,11 @@ name: D iOS simulator
 on:
   workflow_dispatch:
     inputs:
+      runner:
+        description: Apple silicon macOS runner
+        type: choice
+        options: [macos-26, macos-15]
+        default: macos-26
       device_archive:
         description: Build an unsigned archive for physical iPhone and iPad devices
         type: boolean
@@ -10,7 +15,7 @@ permissions:
   contents: read
 jobs:
   build:
-    runs-on: macos-26
+    runs-on: ${{ inputs.runner }}
     timeout-minutes: 90
     steps:
       - uses: actions/checkout@v5
@@ -24,7 +29,13 @@ jobs:
           if [ -n "$selected" ]; then sudo xcode-select -s "$selected/Contents/Developer"; fi
           xcodebuild -version
       - run: xcrun -sdk iphonesimulator metal -v || xcodebuild -downloadComponent MetalToolchain
-      - run: pod install --project-directory=ios
+      - name: Install native dependencies
+        run: |
+          for attempt in 1 2 3; do
+            if pod install --project-directory=ios; then exit 0; fi
+            sleep 5
+          done
+          exit 1
       - name: Archive for physical devices
         if: inputs.device_archive
         run: |
