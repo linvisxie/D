@@ -1,0 +1,18 @@
+appId: com.linvisxie.d
+---
+- launchApp:
+    clearState: true
+- extendedWaitUntil:
+    visible:
+      id: "onboarding-primary"
+    timeout: 60000
+- tapOn:
+    id: "onboarding-primary"
+- tapOn:
+    id: "onboarding-pip-model-.*gemma-3-1b-it-Q4_K_M.gguf"
+- tapOn:
+    id: "onboarding-primary"
+- extendedWaitUntil:
+    visible:
+      id: "start-pal-chat-莉娅"
+    timeout: 120000

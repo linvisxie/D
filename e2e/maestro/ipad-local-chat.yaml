@@ -1,0 +1,30 @@
+appId: com.linvisxie.d
+---
+- tapOn:
+    id: "start-pal-chat-莉娅"
+- extendedWaitUntil:
+    visible:
+      id: "suggested-prompt-chip-0"
+    timeout: 120000
+- tapOn:
+    id: "suggested-prompt-chip-0"
+- extendedWaitUntil:
+    visible:
+      id: "footer-timing"
+    timeout: 300000
+- assertNotVisible:
+    id: "footer-interrupted-status"
+- takeScreenshot: D-iPad-local-reply
+- stopApp
+- launchApp
+- extendedWaitUntil:
+    visible:
+      id: "start-pal-chat-莉娅"
+    timeout: 90000
+- tapOn:
+    id: "start-pal-chat-莉娅"
+- extendedWaitUntil:
+    visible:
+      id: "footer-timing"
+    timeout: 120000
+- takeScreenshot: D-iPad-restored-chat
