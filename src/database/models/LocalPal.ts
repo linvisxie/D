@@ -1,3 +1,4 @@
+import {normalizeNotes} from '../../utils/characterMemory';
 import {Model} from '@nozbe/watermelondb';
 import {field, readonly, date} from '@nozbe/watermelondb/decorators';
 import type {
@@ -38,6 +39,7 @@ export default class LocalPal extends Model {
   @field('is_owned') isOwned?: boolean;
   @field('generation_settings') generationSettings?: string; // JSON stringified
   @field('pact') pact?: string; // JSON stringified { talents: TalentRef[] }
+  @field('memory_notes') memoryNotes?: string;
   @field('greeting') greeting?: string; // JSON stringified Pal['greeting']
   @readonly @date('created_at') createdAt!: Date;
   @readonly @date('updated_at') updatedAt!: Date;
@@ -125,6 +127,14 @@ export default class LocalPal extends Model {
     }
   }
 
+  get parsedMemoryNotes() {
+    try {
+      return normalizeNotes(JSON.parse(this.memoryNotes || '[]'));
+    } catch {
+      return [];
+    }
+  }
+
   get greetingObject(): Pal['greeting'] {
     try {
       return this.greeting ? JSON.parse(this.greeting) : undefined;
@@ -204,6 +214,7 @@ export default class LocalPal extends Model {
       completionSettings: this.completionSettingsObject,
       pact: this.pactObject,
       greeting: this.greetingObject,
+      memoryNotes: this.parsedMemoryNotes,
       created_at: this.createdAt.toISOString(),
       updated_at: this.updatedAt.toISOString(),
     };

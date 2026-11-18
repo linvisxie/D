@@ -182,6 +182,7 @@ describe('PalsScreen', () => {
         withBottomSheetProvider: true,
       });
 
+      fireEvent.press(getByText('All'));
       await waitFor(() => {
         expect(getByText('Local Pal 1')).toBeTruthy();
         expect(getByText('Downloaded Pal')).toBeTruthy();

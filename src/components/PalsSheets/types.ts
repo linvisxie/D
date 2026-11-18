@@ -2,6 +2,7 @@ import {Model} from '../../utils/types';
 
 // Form data structure for the pal sheet
 export interface PalFormData {
+  memoryNotes?: import('../../utils/characterMemory').MemoryNote[];
   name: string;
   description?: string;
   defaultModel?: Model;

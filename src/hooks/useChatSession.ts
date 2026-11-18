@@ -1,3 +1,4 @@
+import {recallNotes} from '../utils/characterMemory';
 import {worldContext} from '../utils/rpImport';
 import React, {useRef} from 'react';
 import {AccessibilityInfo} from 'react-native';
@@ -817,6 +818,10 @@ export const useChatSession = (
       model: modelStore.activeModel,
     });
 
+    if (modelStore.activeModel?.origin !== ModelOrigin.REMOTE) {
+      const memory = recallNotes(pal?.memoryNotes, message.text);
+      if (memory) systemMessages.push({role: 'system', content: memory});
+    }
     const params = pal?.parameters;
     if (params?.dPreset)
       systemMessages.push({role: 'system', content: params.dPreset});

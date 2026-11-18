@@ -153,5 +153,14 @@ export default schemaMigrations({
         }),
       ],
     },
+    {
+      toVersion: 9,
+      steps: [
+        addColumns({
+          table: 'local_pals',
+          columns: [{name: 'memory_notes', type: 'string', isOptional: true}],
+        }),
+      ],
+    },
   ],
 });

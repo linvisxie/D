@@ -193,6 +193,7 @@ class PalRepository {
               LocalPal.safeStringify(generationSettings);
             record.pact = LocalPal.safeStringify(palData.pact);
             record.greeting = LocalPal.safeStringify(palData.greeting);
+            record.memoryNotes = LocalPal.safeStringify(palData.memoryNotes);
           });
       });
 
@@ -299,6 +300,9 @@ class PalRepository {
           }
           if (updates.pact !== undefined) {
             record.pact = LocalPal.safeStringify(updates.pact);
+          }
+          if (updates.memoryNotes !== undefined) {
+            record.memoryNotes = LocalPal.safeStringify(updates.memoryNotes);
           }
           if (updates.greeting !== undefined) {
             record.greeting = LocalPal.safeStringify(updates.greeting);

@@ -34,10 +34,7 @@ const FormField = forwardRef<TextInputInstance, FormFieldProps>(
   ) => {
     const theme = useTheme();
     const styles = createStyles(theme);
-    const {
-      control,
-      formState: {errors},
-    } = useFormContext();
+    const {control} = useFormContext();
 
     return (
       <View style={styles.field}>
@@ -49,15 +46,15 @@ const FormField = forwardRef<TextInputInstance, FormFieldProps>(
         <Controller
           control={control}
           name={name}
-          render={({field: {onChange, value}}) => (
+          render={({field: {onChange, value}, fieldState}) => (
             <TextInput
               testID={`form-field-${name}`}
               ref={ref}
               value={typeof value === 'string' ? value : ''}
               onChangeText={onChange}
-              error={!!errors[name]}
+              error={!!fieldState.error}
               placeholder={placeholder}
-              helperText={errors[name]?.message?.toString()}
+              helperText={fieldState.error?.message}
               multiline={multiline}
               numberOfLines={multiline ? 5 : 1}
               editable={!disabled}

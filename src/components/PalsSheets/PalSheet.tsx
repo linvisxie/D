@@ -17,6 +17,7 @@ import {useForm, FormProvider, Controller} from 'react-hook-form';
 import {useTheme} from '../../hooks';
 
 import {createStyles} from './styles';
+import {CharacterMemory} from './CharacterMemory';
 import {RpImport} from './RpImport';
 import {readBook} from '../../utils/rpImport';
 import {FormField} from './FormField';
@@ -108,6 +109,15 @@ export const PalSheet: React.FC<PalSheetProps> = observer(
         generatingPrompt: z.string().nullable().optional(),
         completionSettings: z.record(z.string(), z.any()).optional(),
         talents: z.array(z.string()).optional(),
+        memoryNotes: z
+          .array(
+            z.object({
+              text: z.string().max(1000, '每条记忆最多 1000 字'),
+              keywords: z.string(),
+              enabled: z.boolean(),
+            }),
+          )
+          .optional(),
         dPreset: z.string().optional(),
         dWorldBook: z
           .string()
@@ -181,6 +191,7 @@ export const PalSheet: React.FC<PalSheetProps> = observer(
         greetingText: pal.greeting?.text ?? '',
         suggestedPrompts: pal.greeting?.suggestedPrompts ?? [],
         ...pal.parameters, // Spread dynamic parameters
+        memoryNotes: pal.memoryNotes || [],
       };
       setCurrentCompletionSettings(pal.completionSettings);
       methods.reset(formData);
@@ -203,6 +214,7 @@ export const PalSheet: React.FC<PalSheetProps> = observer(
         greetingText: pal.greeting?.text ?? '',
         suggestedPrompts: pal.greeting?.suggestedPrompts ?? [],
         ...pal.parameters, // Spread dynamic parameters
+        memoryNotes: pal.memoryNotes || [],
       };
       methods.reset(formData);
     }, [pal, methods]);
@@ -317,6 +329,7 @@ export const PalSheet: React.FC<PalSheetProps> = observer(
           completionSettings: data.completionSettings,
           pact,
           greeting,
+          memoryNotes: data.memoryNotes?.filter(note => note.text.trim()),
         };
 
         if (isEditing) {
@@ -368,6 +381,7 @@ export const PalSheet: React.FC<PalSheetProps> = observer(
               contentContainerStyle={styles.scrollviewContainer}>
               <View style={styles.form}>
                 <RpImport />
+                <CharacterMemory />
                 <FormField
                   ref={ref => {
                     inputRefs.current.name = ref;

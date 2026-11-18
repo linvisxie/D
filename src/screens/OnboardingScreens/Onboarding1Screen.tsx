@@ -10,7 +10,7 @@ import {HighlightText} from './components/HighlightText';
 import {useOnboardingHandlers} from './useOnboardingHandlers';
 
 export const Onboarding1Screen: React.FC = observer(() => {
-  const {l10n, next} = useOnboardingHandlers(1);
+  const {l10n, selectTopic} = useOnboardingHandlers(1);
   const t = l10n.onboarding;
   return (
     <OnboardingScaffold
@@ -18,20 +18,20 @@ export const Onboarding1Screen: React.FC = observer(() => {
       illustration={<Screen1Hero width={112} height={112} />}
       content={
         <OnboardingContent
-          eyebrow={t.screen1.eyebrow}
-          title={
-            <ItalicAccentTitle
-              title={t.screen1.title}
-              accent={t.screen1.titleAccent}
+          eyebrow="D"
+          title={<ItalicAccentTitle title="和莉娅一起走进雾港" />}
+          body={
+            <HighlightText
+              body="先下载一个适合这台设备的模型。下载完成后，你可以离线与角色对话，也可以导入自己的角色卡。聊天记录保存在这台设备上。"
+              phrases={[]}
             />
           }
-          body={<HighlightText body={t.screen1.body} phrases={[]} />}
         />
       }
       bottomBar={
         <OnboardingBottomBar
-          primaryLabel={t.screen1.cta}
-          onPrimary={next}
+          primaryLabel="选择本地模型"
+          onPrimary={() => selectTopic('roleplay')}
           showBack={false}
           backAccessibilityLabel={t.back}
         />

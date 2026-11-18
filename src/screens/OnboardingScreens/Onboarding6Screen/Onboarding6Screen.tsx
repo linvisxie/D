@@ -79,7 +79,8 @@ export const Onboarding6Screen: React.FC = observer(() => {
     : undefined;
   const pickedDownloaded = selectedId ? isDownloaded(selectedId) : false;
   const sizeLabel = formatSize(pickedEntry?.sizeBytes);
-  const palBody = t.screen6.pal[pal.key].body;
+  const palBody =
+    topic === 'roleplay' ? pal.description : t.screen6.pal[pal.key].body;
   const primaryLabel = pickedDownloaded
     ? t.screen6.useTemplate.replace('{{name}}', pal.name)
     : sizeLabel

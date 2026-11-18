@@ -4,6 +4,7 @@ import {Button} from 'react-native-paper';
 import {useFormContext} from 'react-hook-form';
 import {pickJsonFile, readJsonFile} from '../../utils/importUtils';
 import {readBook, readCard, readPreset} from '../../utils/rpImport';
+import {pickCharacterCard} from '../../utils/pickCharacterCard';
 import {FormField} from './FormField';
 import type {PalFormData} from './types';
 
@@ -11,9 +12,14 @@ export function RpImport() {
   const {setValue} = useFormContext<PalFormData>();
   const load = async (kind: '角色卡' | '预设' | '世界书') => {
     try {
-      const uri = await pickJsonFile();
-      if (!uri) return;
-      const json = await readJsonFile(uri);
+      const uri = kind === '角色卡' ? null : await pickJsonFile();
+      const json =
+        kind === '角色卡'
+          ? await pickCharacterCard()
+          : uri
+            ? await readJsonFile(uri)
+            : null;
+      if (json === null) return;
       const options = {shouldDirty: true};
       if (kind === '角色卡') {
         const card = readCard(json);
@@ -48,7 +54,7 @@ export function RpImport() {
     <>
       {(['角色卡', '预设', '世界书'] as const).map(kind => (
         <Button key={kind} onPress={() => load(kind)}>
-          导入{kind} JSON
+          导入{kind} {kind === '角色卡' ? 'PNG / JSON' : 'JSON'}
         </Button>
       ))}
       <FormField name="dPreset" label="对话预设" multiline />

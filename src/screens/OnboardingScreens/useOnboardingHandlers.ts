@@ -100,6 +100,7 @@ export const useOnboardingHandlers = (step: OnboardingStep) => {
             suggestedPrompts: [...palDef.greeting.suggestedPrompts],
           }
         : undefined;
+      await palStore.ready;
       const existing = palStore.pals.find(
         p => p.name === palDef.name && p.source === 'local',
       );
@@ -111,7 +112,7 @@ export const useOnboardingHandlers = (step: OnboardingStep) => {
         if (picked) {
           await palStore.updatePal(existing.id, {
             defaultModel: picked,
-            ...(greeting ? {greeting} : {}),
+            ...(greeting && !existing.greeting ? {greeting} : {}),
           });
         }
       } else {

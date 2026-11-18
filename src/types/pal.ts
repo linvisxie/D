@@ -41,6 +41,7 @@ export interface PalCapabilities {
  * - isPalsHubPal(pal) - returns true if pal is a PalsHubPal
  */
 export interface Pal {
+  memoryNotes?: import('../utils/characterMemory').MemoryNote[];
   // ============================================================================
   // TYPE DISCRIMINATOR - Use this to distinguish between Pal and PalsHubPal
   // ============================================================================

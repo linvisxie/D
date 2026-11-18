@@ -7,18 +7,30 @@ jobs:
     runs-on: macos-26
     timeout-minutes: 90
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version-file: .nvmrc
       - run: corepack enable && yarn install --frozen-lockfile
+      - name: Select latest stable Xcode
+        run: |
+          selected=$(ls -d /Applications/Xcode_*.app | grep -v -i beta | sort -V | tail -1)
+          if [ -n "$selected" ]; then sudo xcode-select -s "$selected/Contents/Developer"; fi
+          xcodebuild -version
       - run: xcrun -sdk iphonesimulator metal -v || xcodebuild -downloadComponent MetalToolchain
       - run: pod install --project-directory=ios
       - name: Build bundled app
         run: |
+          set -o pipefail
           xcodebuild -workspace ios/PocketPal.xcworkspace -scheme PocketPal \
             -configuration Release -destination 'generic/platform=iOS Simulator' \
-            -sdk iphonesimulator -derivedDataPath build ARCHS=arm64 CODE_SIGNING_ALLOWED=NO build
+            -sdk iphonesimulator -derivedDataPath build ARCHS=arm64 CODE_SIGNING_ALLOWED=NO build 2>&1 | tee /tmp/d-ios-build.log
+      - name: Publish compiler errors
+        if: failure()
+        run: |
+          if [ -f /tmp/d-ios-build.log ]; then
+            grep -Ei 'error:|fatal error|No such file|command not found|unsupported|missing required' /tmp/d-ios-build.log | tail -10 | cut -c1-800 | while IFS= read -r error; do echo "::error::$error"; done
+          fi
       - name: Package simulator app
         run: ditto -c -k --keepParent build/Build/Products/Release-iphonesimulator/PocketPal.app D-simulator.zip
       - uses: actions/upload-artifact@v4

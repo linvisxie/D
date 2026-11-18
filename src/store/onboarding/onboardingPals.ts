@@ -1,3 +1,4 @@
+import {LIYA} from './liya';
 /**
  * Hardcoded onboarding pals — one per topic chosen on screen 5, with
  * three model tiers each. `else` falls back to the Pip (smartchat) pal.
@@ -247,21 +248,8 @@ const PAL_SAGE: OnboardingPalDef = {
 
 const PAL_ECHO: OnboardingPalDef = {
   key: 'echo',
-  name: 'Echo',
-  description:
-    'A roleplay companion who stays in character and brings every scene to life.',
-  systemPrompt:
-    "You are Echo, a roleplay companion. Stay fully in character; never break the fourth wall. Write vivid scenes with senses, action, and dialogue. Keep turns to 100-180 words and end on a moment the user can react to. Follow the user's cues; let them drive the story.",
+  ...LIYA,
   color: ['#3B0E5E', '#C99BE0'],
-  greeting: {
-    text: "I'm Echo — every story needs a second voice. Where shall we begin?",
-    suggestedPrompts: [
-      "You're a mysterious innkeeper; I just walked in from the rain",
-      'Play a sarcastic detective in 1920s Chicago',
-      "You're a dragon who hoards books instead of gold",
-      'Continue a story: two strangers on the last train home',
-    ],
-  },
   models: [
     palEntry({
       tier: 'quick',
