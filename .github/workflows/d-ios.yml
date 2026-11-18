@@ -35,7 +35,7 @@ jobs:
             CODE_SIGNING_ALLOWED=NO archive 2>&1 | tee /tmp/d-ios-build.log
           app=build/D.xcarchive/Products/Applications/PocketPal.app
           test -s "$app/main.jsbundle"
-          lipo -verify_arch arm64 "$app/PocketPal"
+          lipo "$app/PocketPal" -verify_arch arm64
           ditto -c -k --keepParent build/D.xcarchive D-device-archive.zip
       - uses: actions/upload-artifact@v4
         if: inputs.device_archive
