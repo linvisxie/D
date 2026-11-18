@@ -35,7 +35,8 @@ jobs:
           xcrun simctl install "$device" binary/PocketPal.app
           mkdir screenshots
           cd screenshots
-          maestro --device "$device" test --format junit --output ipad.xml ../e2e/maestro/ipad-first-run.yaml
+          maestro --device "$device" test --format junit --test-output-dir . --output ipad.xml ../e2e/maestro/ipad-first-run.yaml
+          xcrun simctl io "$device" screenshot D-iPad-library.png
       - name: Download the model through onboarding and exercise local inference
         if: inputs.local_chat
         working-directory: screenshots
@@ -49,7 +50,8 @@ jobs:
             sleep 4
           done
           if [ -z "$model" ]; then echo "::error::The onboarding model did not finish downloading."; exit 1; fi
-          maestro --device "$IPAD_UDID" test --format junit --output inference.xml ../e2e/maestro/ipad-local-chat.yaml
+          maestro --device "$IPAD_UDID" test --format junit --test-output-dir . --output inference.xml ../e2e/maestro/ipad-local-chat.yaml
+          xcrun simctl io "$IPAD_UDID" screenshot D-iPad-conversation.png
       - name: Record test failure
         if: failure()
         run: |
