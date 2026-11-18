@@ -1,0 +1,29 @@
+appId: com.linvisxie.d
+---
+- launchApp:
+    clearState: true
+- extendedWaitUntil:
+    visible:
+      id: "onboarding-primary"
+    timeout: 60000
+- takeScreenshot: D-iPad-welcome
+- tapOn:
+    id: "onboarding-primary"
+- assertVisible: ".*莉娅.*"
+- takeScreenshot: D-iPad-models
+- tapOn: "稍后下载，先浏览角色"
+- extendedWaitUntil:
+    visible:
+      id: "filter-chip-local"
+    timeout: 30000
+- takeScreenshot: D-iPad-characters
+- tapOn:
+    id: "bottom-action-search"
+- assertVisible:
+    id: "search-input"
+- stopApp
+- launchApp
+- extendedWaitUntil:
+    visible:
+      id: "filter-chip-local"
+    timeout: 30000

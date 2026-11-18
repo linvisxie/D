@@ -1,0 +1,38 @@
+name: D iPad acceptance
+on:
+  workflow_dispatch:
+    inputs:
+      build_run:
+        description: Successful D iOS simulator run ID
+        required: true
+permissions:
+  contents: read
+  actions: read
+jobs:
+  acceptance:
+    runs-on: macos-26
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/download-artifact@v4
+        with:
+          name: D-iOS-simulator
+          run-id: ${{ inputs.build_run }}
+          github-token: ${{ github.token }}
+          path: binary
+      - name: Install test driver
+        run: brew install mobile-dev-inc/tap/maestro
+      - name: Exercise a fresh install on iPad
+        run: |
+          device=$(xcrun simctl list -j devices available | python3 -c 'import json,sys; print(next(d["udid"] for group in json.load(sys.stdin)["devices"].values() for d in group if d["name"].startswith("iPad")))')
+          xcrun simctl bootstatus "$device" -b
+          ditto -x -k binary/D-simulator.zip binary
+          xcrun simctl install "$device" binary/PocketPal.app
+          mkdir screenshots
+          cd screenshots
+          maestro --device "$device" test --format junit --output ipad.xml ../e2e/maestro/ipad-first-run.yaml
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: D-iPad-acceptance
+          path: screenshots

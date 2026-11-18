@@ -34,9 +34,9 @@ jobs:
           if [ -f /tmp/d-ios-build.log ]; then
             awk 'tolower($0) ~ /error:|fatal error|undefined symbol|command .*failed|unable to resolve|module not found/ && tolower($0) !~ /warning:| -werror/ {print "::error::" substr($0,1,800); if (++count == 10) exit}' /tmp/d-ios-build.log
           fi
-      - name: Launch on iPhone simulator
+      - name: Launch on iPad simulator
         run: |
-          device=$(xcrun simctl list -j devices available | python3 -c 'import json,sys; print(next(d["udid"] for group in json.load(sys.stdin)["devices"].values() for d in group if d["name"].startswith("iPhone")))')
+          device=$(xcrun simctl list -j devices available | python3 -c 'import json,sys; print(next(d["udid"] for group in json.load(sys.stdin)["devices"].values() for d in group if d["name"].startswith("iPad")))')
           xcrun simctl bootstatus "$device" -b
           app=build/Build/Products/Release-iphonesimulator/PocketPal.app
           codesign --force --deep --sign - "$app"
