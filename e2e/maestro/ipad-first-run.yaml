@@ -14,16 +14,20 @@ appId: com.linvisxie.d
 - tapOn: "稍后下载，先浏览角色"
 - extendedWaitUntil:
     visible:
-      id: "filter-chip-local"
+      id: "home-featured-chat"
     timeout: 30000
+- assertVisible:
+    id: "home-import"
+- assertVisible:
+    id: "home-create"
 - takeScreenshot: D-iPad-characters
 - tapOn:
-    id: "bottom-action-search"
+    id: "home-search"
 - assertVisible:
     id: "search-input"
 - stopApp
 - launchApp
 - extendedWaitUntil:
     visible:
-      id: "filter-chip-local"
+      id: "home-featured-chat"
     timeout: 30000

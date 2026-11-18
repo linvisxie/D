@@ -1,7 +1,7 @@
 import React from 'react';
 import {observer} from 'mobx-react';
 
-import {Screen1Hero} from '../../assets/onboarding/illustrations';
+import {Image, StyleSheet} from 'react-native';
 import {OnboardingScaffold} from './components/OnboardingScaffold';
 import {OnboardingBottomBar} from './components/OnboardingBottomBar';
 import {OnboardingContent} from './components/OnboardingContent';
@@ -15,7 +15,13 @@ export const Onboarding1Screen: React.FC = observer(() => {
   return (
     <OnboardingScaffold
       step={1}
-      illustration={<Screen1Hero width={112} height={112} />}
+      illustration={
+        <Image
+          accessibilityLabel="雾港码头的莉娅"
+          source={require('../../assets/roleplay/fog-harbor.jpg')}
+          style={styles.harbor}
+        />
+      }
       content={
         <OnboardingContent
           eyebrow="D"
@@ -38,4 +44,8 @@ export const Onboarding1Screen: React.FC = observer(() => {
       }
     />
   );
+});
+
+const styles = StyleSheet.create({
+  harbor: {width: '94%', maxWidth: 760, aspectRatio: 2.15, borderRadius: 18},
 });

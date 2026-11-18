@@ -1,6 +1,7 @@
 // Navigation route names
 export const ROUTES = {
   // Main app routes
+  STORY_HOME: 'StoryHome',
   CHAT: 'Chat',
   MODELS: 'Models',
   PALS: 'Pals (experimental)',

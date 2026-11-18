@@ -549,6 +549,13 @@ export const SidebarContent: React.FC<DrawerContentComponentProps> = observer(
         <View>
           <Drawer.Section showDivider={false}>
             <Drawer.Item
+              label="故事书房"
+              icon={() => <PalIcon stroke={theme.colors.primary} />}
+              onPress={() => navigateTo(ROUTES.STORY_HOME)}
+              style={styles.menuDrawerItem}
+              testID="drawer-item-story-home"
+            />
+            <Drawer.Item
               label={l10n.components.sidebarContent.menuItems.chat}
               icon={() => <ChatIcon stroke={theme.colors.primary} />}
               onPress={() => navigateTo(ROUTES.CHAT)}

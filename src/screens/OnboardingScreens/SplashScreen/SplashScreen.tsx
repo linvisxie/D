@@ -1,10 +1,8 @@
-import React, {useContext} from 'react';
-import {View} from 'react-native';
+import React from 'react';
+import {Text, View} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 
-import {SplashMark} from '../../../assets/onboarding/illustrations';
 import {useTheme} from '../../../hooks';
-import {L10nContext} from '../../../utils';
 import {ROUTES} from '../../../utils/navigationConstants';
 import {createStyles} from './styles';
 
@@ -19,7 +17,6 @@ export const SplashScreen: React.FC = () => {
   const navigation = useNavigation<any>();
   const theme = useTheme();
   const styles = createStyles(theme);
-  const l10n = useContext(L10nContext);
 
   React.useEffect(() => {
     const t = setTimeout(() => {
@@ -30,12 +27,9 @@ export const SplashScreen: React.FC = () => {
 
   return (
     <View testID="onboarding-splash" style={styles.root}>
-      <SplashMark
-        width={112}
-        height={112}
-        accessibilityLabel={l10n.onboarding.splash.brand}
-        accessibilityRole="image"
-      />
+      <Text accessibilityLabel="D" style={styles.mark}>
+        D
+      </Text>
     </View>
   );
 };

@@ -1,7 +1,7 @@
 appId: com.linvisxie.d
 ---
 - tapOn:
-    id: "start-pal-chat-莉娅"
+    id: "home-featured-chat"
 - extendedWaitUntil:
     visible:
       id: "suggested-prompt-chip-0"
@@ -19,10 +19,10 @@ appId: com.linvisxie.d
 - launchApp
 - extendedWaitUntil:
     visible:
-      id: "start-pal-chat-莉娅"
+      id: "home-featured-chat"
     timeout: 90000
 - tapOn:
-    id: "start-pal-chat-莉娅"
+    id: "home-featured-chat"
 - extendedWaitUntil:
     visible:
       id: "footer-timing"

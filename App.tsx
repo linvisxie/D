@@ -59,6 +59,7 @@ import {
   // Dev tools screen. Only available in debug mode.
   DevToolsScreen,
 } from './src/screens';
+import {StoryHome} from './src/screens/StoryHome/StoryHome';
 import PalsScreen from './src/screens/PalsScreen';
 import {OnboardingStack} from './src/screens/OnboardingScreens';
 
@@ -142,7 +143,7 @@ const App = observer(() => {
                     <SwitchPoint
                       drawer={
                         <Drawer.Navigator
-                          initialRouteName={ROUTES.PALS}
+                          initialRouteName={ROUTES.STORY_HOME}
                           screenOptions={{
                             headerLeft: () => <HeaderLeft />,
                             drawerStyle: {
@@ -163,6 +164,14 @@ const App = observer(() => {
                             component={gestureHandlerRootHOC(ChatScreen)}
                             options={{
                               headerShown: false,
+                            }}
+                          />
+                          <Drawer.Screen
+                            name={ROUTES.STORY_HOME}
+                            component={gestureHandlerRootHOC(StoryHome)}
+                            options={{
+                              title: 'D · 故事书房',
+                              headerStyle: styles.headerWithoutDivider,
                             }}
                           />
                           <Drawer.Screen

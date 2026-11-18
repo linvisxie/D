@@ -14,5 +14,5 @@ appId: com.linvisxie.d
     id: "onboarding-primary"
 - extendedWaitUntil:
     visible:
-      id: "start-pal-chat-莉娅"
+      id: "home-featured-chat"
     timeout: 120000

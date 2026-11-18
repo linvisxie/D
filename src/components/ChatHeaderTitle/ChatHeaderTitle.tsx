@@ -4,7 +4,7 @@ import {observer} from 'mobx-react';
 import {Text} from 'react-native-paper';
 
 import {styles} from './styles';
-import {chatSessionStore, modelStore} from '../../store';
+import {chatSessionStore, modelStore, palStore} from '../../store';
 import {L10nContext} from '../../utils';
 
 export const ChatHeaderTitle: React.FC = observer(() => {
@@ -13,12 +13,17 @@ export const ChatHeaderTitle: React.FC = observer(() => {
   const activeSession = chatSessionStore.sessions.find(
     session => session.id === activeSessionId,
   );
+  const character = palStore.pals.find(
+    p => p.id === chatSessionStore.activePalId,
+  );
   const activeModel = modelStore.activeModel;
 
   return (
     <View style={styles.container}>
       <Text numberOfLines={1} variant="titleSmall">
-        {activeSession?.title || l10n.components.chatHeaderTitle.defaultTitle}
+        {character?.name ||
+          activeSession?.title ||
+          l10n.components.chatHeaderTitle.defaultTitle}
       </Text>
       {activeModel?.name && (
         <Text numberOfLines={1} variant="bodySmall">
