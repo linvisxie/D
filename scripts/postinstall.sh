@@ -3,6 +3,8 @@
 # Run patch-package first
 npx patch-package --error-on-fail || exit 1
 
+node scripts/compact-phonemize.cjs || exit 1
+
 # Clone OpenCL headers if building llama.rn from source
 OPENCL_HEADERS_DIR="node_modules/llama.rn/third_party/OpenCL-Headers"
 if [ ! -d "$OPENCL_HEADERS_DIR" ]; then
