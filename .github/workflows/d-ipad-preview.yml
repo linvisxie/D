@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
     inputs:
       archive_run:
-        description: Successful D iOS device archive run ID
+        description: Successful D iOS device build containing the IPA
         required: true
       tag:
         description: New iPad prerelease tag
@@ -13,7 +13,7 @@ permissions:
   contents: write
 jobs:
   package:
-    runs-on: macos-26
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
       - name: Identify build revision
@@ -32,13 +32,14 @@ jobs:
           run-id: ${{ inputs.archive_run }}
           github-token: ${{ github.token }}
           path: archive
-      - name: Package and publish the device IPA
+      - name: Publish the verified device IPA
         env:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ inputs.tag }}
         run: |
-          ditto -x -k archive/D-device-archive.zip archive
-          bash scripts/package-device-ipa.sh archive/D.xcarchive/Products/Applications/PocketPal.app D-iPad-unsigned.ipa
+          cd archive
+          unzip -tq D-iPad-unsigned.ipa
+          unzip -p D-iPad-unsigned.ipa Payload/PocketPal.app/Info.plist | python3 -c 'import plistlib,sys; info=plistlib.loads(sys.stdin.buffer.read()); assert info["CFBundleSupportedPlatforms"] == ["iPhoneOS"] and 2 in info["UIDeviceFamily"] and info["CFBundleIdentifier"] == "com.linvisxie.d"'
           echo '在 iPad 下载本页的 IPA，在签名工具中选择自己的 P12 及配套描述文件，签名后安装。Bundle ID 为 com.linvisxie.d。首次试聊可选 Gemma 3 1B，或从文件导入 GGUF。' > release.md
-          shasum -a 256 D-iPad-unsigned.ipa >> release.md
+          sha256sum D-iPad-unsigned.ipa >> release.md
           gh release create "$TAG" D-iPad-unsigned.ipa --target "$BUILD_SHA" --prerelease --title "D · iPad 首测 ($TAG)" --notes-file release.md
