@@ -2,6 +2,7 @@ import {NativeModules, Platform, NativeEventEmitter} from 'react-native';
 
 import * as RNFS from '@dr.pogodin/react-native-fs';
 
+import {uiStore} from '../../../store';
 import {basicModel} from '../../../../jest/fixtures/models';
 
 import {DownloadManager, DownloadCancelledError} from '../DownloadManager';
@@ -389,6 +390,42 @@ describe('DownloadManager', () => {
     );
 
     expect(iosDownloadManager.isDownloading('model-1')).toBe(false);
+  });
+
+  it('retries in the foreground when the iOS background session cannot start', async () => {
+    (Platform as any).OS = 'ios';
+    const original = uiStore.iOSBackgroundDownloading;
+    uiStore.iOSBackgroundDownloading = true;
+    try {
+      const manager = new DownloadManager();
+      const callbacks = {
+        onStart: jest.fn(),
+        onComplete: jest.fn(),
+        onError: jest.fn(),
+      };
+      manager.setCallbacks(callbacks);
+      const failure = Object.assign(new Error('unknown error'), {
+        code: 'NSURLErrorDomain:-1',
+      });
+      const download = RNFS.downloadFile as jest.Mock;
+      download.mockImplementationOnce(() => ({
+        jobId: 41,
+        promise: Promise.reject(failure),
+      }));
+      download.mockImplementationOnce(() => ({
+        jobId: 42,
+        promise: Promise.resolve({statusCode: 200}),
+      }));
+      await manager.startDownload(basicModel, '/path/to/model.bin');
+      expect(
+        download.mock.calls.map(([options]) => options.background),
+      ).toEqual([true, false]);
+      expect(callbacks.onStart).toHaveBeenCalledTimes(1);
+      expect(callbacks.onComplete).toHaveBeenCalledWith(basicModel.id);
+      expect(callbacks.onError).not.toHaveBeenCalled();
+    } finally {
+      uiStore.iOSBackgroundDownloading = original;
+    }
   });
 
   it('does not surface an error when an iOS download is cancelled', async () => {

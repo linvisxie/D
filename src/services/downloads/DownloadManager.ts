@@ -344,11 +344,11 @@ export class DownloadManager {
       });
       this.callbacks.onStart?.(model.id);
 
-      // Create the download task
-      const downloadResult = RNFS.downloadFile({
+      const background = uiStore.iOSBackgroundDownloading;
+      const options: Parameters<typeof RNFS.downloadFile>[0] = {
         fromUrl: model.downloadUrl!,
         toFile: destinationPath,
-        background: uiStore.iOSBackgroundDownloading,
+        background,
         discretionary: false,
         progressInterval: 800,
         headers: {
@@ -359,8 +359,7 @@ export class DownloadManager {
           console.log(`${TAG}: Download started for ID: ${model.id}`, {
             statusCode: res.statusCode,
             contentLength: res.contentLength,
-            headers: res.headers,
-            jobId: downloadResult.jobId,
+            jobId: res.jobId,
           });
 
           // Initialize progress
@@ -418,21 +417,31 @@ export class DownloadManager {
 
           this.callbacks.onProgress?.(model.id, progress);
         },
+      };
+
+      const transfer = (useBackground: boolean) => {
+        const task = RNFS.downloadFile({...options, background: useBackground});
+        runInAction(() => {
+          const job = this.downloadJobs.get(model.id);
+          if (job) job.jobId = task.jobId;
+        });
+        return task.promise;
+      };
+
+      const result = await transfer(background).catch((error: unknown) => {
+        // NSURLSession can fail to connect to its background daemon before
+        // receiving any bytes. A regular session can still run in this case.
+        const code = (error as {code?: string} | null)?.code;
+        if (
+          background &&
+          code === 'NSURLErrorDomain:-1' &&
+          this.downloadJobs.get(model.id)?.lastBytesWritten === 0 &&
+          !this.cancelledModelIds.has(model.id)
+        ) {
+          return transfer(false);
+        }
+        throw error;
       });
-
-      // Store the jobId immediately for cancellation
-      downloadJob.jobId = downloadResult.jobId;
-      console.log(
-        `${TAG}: Created download with jobId: ${downloadResult.jobId}`,
-      );
-
-      // Add job to map after setting jobId
-      runInAction(() => {
-        this.downloadJobs.set(model.id, downloadJob);
-      });
-
-      // Wait for the download to complete
-      const result = await downloadResult.promise;
 
       if (result.statusCode === 200) {
         console.log(
