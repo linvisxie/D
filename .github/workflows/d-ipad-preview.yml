@@ -1,0 +1,44 @@
+name: Publish D iPad preview
+on:
+  workflow_dispatch:
+    inputs:
+      archive_run:
+        description: Successful D iOS device archive run ID
+        required: true
+      tag:
+        description: New iPad prerelease tag
+        required: true
+permissions:
+  actions: read
+  contents: write
+jobs:
+  package:
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v5
+      - name: Identify build revision
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN: ${{ inputs.archive_run }}
+          TAG: ${{ inputs.tag }}
+        run: |
+          [[ "$RUN" =~ ^[0-9]+$ && "$TAG" =~ ^ipad-preview-[A-Za-z0-9.-]+$ ]]
+          sha=$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$RUN" --jq 'select(.conclusion=="success" and .path==".github/workflows/d-ios.yml") | .head_sha')
+          [[ "$sha" =~ ^[0-9a-f]{40}$ ]]
+          echo "BUILD_SHA=$sha" >> "$GITHUB_ENV"
+      - uses: actions/download-artifact@v4
+        with:
+          name: D-device-archive
+          run-id: ${{ inputs.archive_run }}
+          github-token: ${{ github.token }}
+          path: archive
+      - name: Package and publish the device IPA
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ inputs.tag }}
+        run: |
+          ditto -x -k archive/D-device-archive.zip archive
+          bash scripts/package-device-ipa.sh archive/D.xcarchive/Products/Applications/PocketPal.app D-iPad-unsigned.ipa
+          echo '在 iPad 下载本页的 IPA，在签名工具中选择自己的 P12 及配套描述文件，签名后安装。Bundle ID 为 com.linvisxie.d。首次试聊可选 Gemma 3 1B，或从文件导入 GGUF。' > release.md
+          shasum -a 256 D-iPad-unsigned.ipa >> release.md
+          gh release create "$TAG" D-iPad-unsigned.ipa --target "$BUILD_SHA" --prerelease --title "D · iPad 首测 ($TAG)" --notes-file release.md
