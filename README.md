@@ -26,6 +26,12 @@ D 是一款面向 iPhone 和 iPad 的本地 AI 角色扮演应用。首次联网
 
 `yarn typecheck` 检查 TypeScript，`yarn test` 运行测试。GitHub Actions 的 **D iOS simulator** 工作流构建包含 JS bundle 的模拟器应用，安装并启动后留存应用压缩包和首次启动截图。真机离线推理、连续会话内存、首字延迟及发热属于独立验收项。
 
+### 首测 iPad
+
+- **Apple silicon Mac 上的 iPad 模拟器**：在 GitHub Actions 的成功构建里下载 D-iOS-simulator，解压其中的 D-simulator.zip。打开 Xcode 的 Simulator，启动 iPad，将 PocketPal.app 拖入模拟器，桌面显示名称为 D。
+- **连接 Mac 的真实 iPad**：打开 ios/PocketPal.xcworkspace，选 PocketPal target，在 Signing & Capabilities 选择自己的 Team，再选择已连接并信任的 iPad，在 Xcode 运行 Release 配置。设备需启用开发者模式，签名账号需要支持所保留的 entitlements。
+- **团队分发**：工作流勾选 device_archive 可生成未签名的 D-device-archive。TestFlight 安装还需要项目团队完成 Apple 分发签名，并通过 App Store Connect 上传、处理和分配测试资格。
+
 ### 上游
 
 - [PocketPal AI](https://github.com/a-ghorbani/pocketpal-ai/tree/53f7d5d697a46abe8b87eb4f5d4351082e3a26d9) 提供 React Native 原生应用、本地模型推理、语音和会话存储。根目录保留 MIT 许可。
