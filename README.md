@@ -28,6 +28,8 @@ D 是一款面向 iPhone 和 iPad 的本地 AI 角色扮演应用。首次联网
 
 ### 首测 iPad
 
+用 iPad 登录本仓库后，可在 [D 首测 2.1 下载页](https://github.com/linvisxie/D/releases/tag/ipad-preview-2.1) 保存真机 IPA。
+
 [iPad 模拟器验收记录](https://github.com/linvisxie/D/actions/runs/44361348093)覆盖首次启动、从欢迎页下载 Gemma 3 1B Q4_K_M、进入莉娅的对话和重启恢复历史。测试核对模型文件的 SHA-256，并从本地数据库确认回复属于该角色、来源为本地推理。这次运行的首个 token 用时约 1.55 秒，生成速度约 30 token/秒。真机表现随 iPad 型号、内存和温度变化。
 
 - **Apple silicon Mac 上的 iPad 模拟器**：在 GitHub Actions 的成功构建里下载 D-iOS-simulator，解压其中的 D-simulator.zip。打开 Xcode 的 Simulator，启动 iPad，将 PocketPal.app 拖入模拟器，桌面显示名称为 D。

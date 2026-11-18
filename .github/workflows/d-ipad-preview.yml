@@ -1,4 +1,4 @@
-name: Publish D iPad preview
+name: Verify D iPad preview
 on:
   workflow_dispatch:
     inputs:
@@ -6,11 +6,11 @@ on:
         description: Successful D iOS device build containing the IPA
         required: true
       tag:
-        description: New iPad prerelease tag
+        description: Existing iPad preview tag for the build
         required: true
 permissions:
   actions: read
-  contents: write
+  contents: read
 jobs:
   package:
     runs-on: ubuntu-latest
@@ -25,21 +25,21 @@ jobs:
           [[ "$RUN" =~ ^[0-9]+$ && "$TAG" =~ ^ipad-preview-[A-Za-z0-9.-]+$ ]]
           sha=$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$RUN" --jq 'select(.conclusion=="success" and .path==".github/workflows/d-ios.yml") | .head_sha')
           [[ "$sha" =~ ^[0-9a-f]{40}$ ]]
-          echo "BUILD_SHA=$sha" >> "$GITHUB_ENV"
+          tagged=$(gh api "repos/$GITHUB_REPOSITORY/commits/$TAG" --jq .sha)
+          [[ "$sha" = "$tagged" ]]
       - uses: actions/download-artifact@v4
         with:
           name: D-device-archive
           run-id: ${{ inputs.archive_run }}
           github-token: ${{ github.token }}
           path: archive
-      - name: Publish the verified device IPA
-        env:
-          GH_TOKEN: ${{ github.token }}
-          TAG: ${{ inputs.tag }}
+      - name: Verify the device IPA
         run: |
           cd archive
           unzip -tq D-iPad-unsigned.ipa
           unzip -p D-iPad-unsigned.ipa Payload/PocketPal.app/Info.plist | python3 -c 'import plistlib,sys; info=plistlib.loads(sys.stdin.buffer.read()); assert info["CFBundleSupportedPlatforms"] == ["iPhoneOS"] and 2 in info["UIDeviceFamily"] and info["CFBundleIdentifier"] == "com.linvisxie.d"'
-          echo '在 iPad 下载本页的 IPA，在签名工具中选择自己的 P12 及配套描述文件，签名后安装。Bundle ID 为 com.linvisxie.d。首次试聊可选 Gemma 3 1B，或从文件导入 GGUF。' > release.md
-          sha256sum D-iPad-unsigned.ipa >> release.md
-          gh release create "$TAG" D-iPad-unsigned.ipa --target "$BUILD_SHA" --prerelease --title "D · iPad 首测 ($TAG)" --notes-file release.md
+          sha256sum D-iPad-unsigned.ipa | tee "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: D-iPad-unsigned-${{ inputs.tag }}
+          path: archive/D-iPad-unsigned.ipa
