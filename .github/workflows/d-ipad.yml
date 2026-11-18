@@ -50,8 +50,11 @@ jobs:
             sleep 4
           done
           if [ -z "$model" ]; then echo "::error::The onboarding model did not finish downloading."; exit 1; fi
+          echo "8d78d9d059a7605c401c105e169e0b08e9f0edc603ceb842f1c4bbb834296d17  $model" | shasum -a 256 -c -
           maestro --device "$IPAD_UDID" test --format junit --test-output-dir . --output inference.xml ../e2e/maestro/ipad-local-chat.yaml
           xcrun simctl io "$IPAD_UDID" screenshot D-iPad-conversation.png
+          python3 ../e2e/maestro/check-ipad-reply.py "$container" > local-reply.json
+          cat local-reply.json
       - name: Record test failure
         if: failure()
         run: |
