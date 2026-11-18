@@ -2,6 +2,10 @@ name: Verify D iPad preview
 on:
   workflow_dispatch:
     inputs:
+      attach:
+        description: Attach the verified IPA to the existing GitHub release
+        type: boolean
+        default: false
       archive_run:
         description: Successful D iOS device build containing the IPA
         required: true
@@ -43,3 +47,28 @@ jobs:
         with:
           name: D-iPad-unsigned-${{ inputs.tag }}
           path: archive/D-iPad-unsigned.ipa
+  attach:
+    if: inputs.attach
+    needs: package
+    permissions:
+      actions: read
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: D-iPad-unsigned-${{ inputs.tag }}
+      - name: Upload and read back the release asset
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ inputs.tag }}
+        run: |
+          set -euo pipefail
+          file=D-iPad-unsigned.ipa
+          assets=$(gh release view "$TAG" --repo "$GITHUB_REPOSITORY" --json assets --jq '.assets[].name')
+          if ! grep -Fxq "$file" <<< "$assets"; then
+            gh release upload "$TAG" "$file" --repo "$GITHUB_REPOSITORY"
+          fi
+          gh release download "$TAG" --repo "$GITHUB_REPOSITORY" --pattern "$file" --dir readback
+          cmp "$file" "readback/$file"
+          sha256sum "readback/$file" >> "$GITHUB_STEP_SUMMARY"
