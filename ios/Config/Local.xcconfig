@@ -1,0 +1,2 @@
+// Optional sign-in configuration for builds with connected services.
+#include? "Env.xcconfig"

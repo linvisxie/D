@@ -28,7 +28,6 @@
 		9BD11C540B6D45308B7727A2 /* Fraunces-MediumItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = EE113D56B0AD433688D66860 /* Fraunces-MediumItalic.ttf */; };
 		A81001102E92E09600935976 /* KeepAwakeModule.mm in Sources */ = {isa = PBXBuildFile; fileRef = A810010E2E92E09600935976 /* KeepAwakeModule.mm */; };
 		A81001162E92FFC900935976 /* HardwareInfoModule.mm in Sources */ = {isa = PBXBuildFile; fileRef = A81001152E92FFC900935976 /* HardwareInfoModule.mm */; };
-		A862F7232EE04CE50062E673 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = A862F7222EE04CE50062E673 /* GoogleService-Info.plist */; };
 		A86CF0D42EA57BE100BFFCEE /* LlamaContextWrapper.mm in Sources */ = {isa = PBXBuildFile; fileRef = A86CF0D32EA57BE100BFFCEE /* LlamaContextWrapper.mm */; settings = {COMPILER_FLAGS = "-I\"$(SRCROOT)/../node_modules/llama.rn/cpp\" -I\"$(SRCROOT)/../node_modules/llama.rn/vendor/llama.cpp\" -I\"$(SRCROOT)/../node_modules/llama.rn/vendor/llama.cpp/include\" -I\"$(SRCROOT)/../node_modules/llama.rn/vendor/llama.cpp/ggml/include\" -I\"$(SRCROOT)/../node_modules/llama.rn/vendor/llama.cpp/ggml/src\" -I\"$(SRCROOT)/../node_modules/llama.rn/vendor/llama.cpp/common\" -I\"$(SRCROOT)/../node_modules/llama.rn/vendor/llama.cpp/src\" -I\"$(SRCROOT)/../node_modules/llama.rn/vendor/llama.cpp/ggml/src/ggml-cpu\" -I\"$(SRCROOT)/../node_modules/llama.rn/vendor/llama.cpp/tools/mtmd\" -I\"$(SRCROOT)/../node_modules/llama.rn/vendor/llama.cpp/vendor\" -I\"$(SRCROOT)/../node_modules/llama.rn/vendor/llama.cpp/vendor/hash\" -I\"$(SRCROOT)/../node_modules/llama.rn/vendor/codec.cpp/include\" -I\"$(SRCROOT)/../node_modules/llama.rn/vendor/codec.cpp/common\" -I\"$(SRCROOT)/../node_modules/llama.rn/vendor/codec.cpp/src\" -I\"$(PODS_ROOT)/Headers/Private/Yoga\" -I\"${PODS_ROOT}/React-graphics\" -I\"${PODS_ROOT}/React-graphics/react/renderer/graphics/platform/ios\" -I\"${PODS_ROOT}/React-Fabric\" -I\"${PODS_ROOT}/React-Fabric/react/renderer/components/view/platform/cxx\" -I\"${PODS_ROOT}/React-FabricImage\" -I\"${PODS_ROOT}/ReactCommon\" -I\"${PODS_ROOT}/ReactCommon/react/nativemodule/core\" -I\"${PODS_ROOT}/React-runtimeexecutor\" -I\"${PODS_ROOT}/React-runtimeexecutor/platform/ios\" -I\"${PODS_ROOT}/React-NativeModulesApple\" -I\"${PODS_ROOT}/React-RCTFabric\" -I\"${PODS_ROOT}/React-utils\" -I\"${PODS_ROOT}/React-featureflags\" -I\"${PODS_ROOT}/React-debug\" -I\"${PODS_ROOT}/React-ImageManager\" -I\"${PODS_ROOT}/React-rendererdebug\" -I\"${PODS_ROOT}/React-renderercss\" -I\"$(PODS_ROOT)/ReactNativeDependencies/Headers\""; }; };
 		A86CF0D62EA9567800BFFCEE /* MustacheRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A86CF0D52EA9567800BFFCEE /* MustacheRenderer.swift */; };
 		A8B4FFD32EA5731700CD3B4C /* LlamaInferenceEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8B4FFCD2EA5731700CD3B4C /* LlamaInferenceEngine.swift */; };
@@ -82,9 +81,8 @@
 		A810010E2E92E09600935976 /* KeepAwakeModule.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = KeepAwakeModule.mm; path = PocketPal/KeepAwakeModule.mm; sourceTree = "<group>"; };
 		A81001122E92E09800935976 /* PocketPal-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "PocketPal-Bridging-Header.h"; sourceTree = "<group>"; };
 		A81001152E92FFC900935976 /* HardwareInfoModule.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = HardwareInfoModule.mm; path = PocketPal/HardwareInfoModule.mm; sourceTree = "<group>"; };
-		A826FC242E9ECA10003F1572 /* Env.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = Env.xcconfig; path = Config/Env.xcconfig; sourceTree = "<group>"; };
+		A826FC242E9ECA10003F1572 /* Local.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = Local.xcconfig; path = Config/Local.xcconfig; sourceTree = "<group>"; };
 		A826FC2A2E9ECA9B003F1572 /* PocketPalTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PocketPalTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		A862F7222EE04CE50062E673 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		A86CF0D22EA57BE100BFFCEE /* LlamaContextWrapper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = LlamaContextWrapper.h; path = PocketPal/AppIntents/LlamaContextWrapper.h; sourceTree = "<group>"; };
 		A86CF0D32EA57BE100BFFCEE /* LlamaContextWrapper.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = LlamaContextWrapper.mm; path = PocketPal/AppIntents/LlamaContextWrapper.mm; sourceTree = "<group>"; };
 		A86CF0D52EA9567800BFFCEE /* MustacheRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = MustacheRenderer.swift; path = PocketPal/AppIntents/MustacheRenderer.swift; sourceTree = "<group>"; };
@@ -208,8 +206,7 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
-				A862F7222EE04CE50062E673 /* GoogleService-Info.plist */,
-				A826FC242E9ECA10003F1572 /* Env.xcconfig */,
+				A826FC242E9ECA10003F1572 /* Local.xcconfig */,
 				13B07FAE1A68108700A75B9A /* PocketPal */,
 				3F8B6EF06A45472063001E32 /* PocketPalTests */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
@@ -344,7 +341,6 @@
 				9AE3DCE490A24E01AA31653A /* Inter-Light.ttf in Resources */,
 				468C5914EED04BB8A4C21D62 /* Inter-Medium.ttf in Resources */,
 				76C57660BD9A47C38737D8FD /* Inter-Regular.ttf in Resources */,
-				A862F7232EE04CE50062E673 /* GoogleService-Info.plist in Resources */,
 				FF002F1D6D914619BAB71A78 /* Inter-SemiBold.ttf in Resources */,
 				98A9C9EC8A4B4D7C9F59C8FE /* Inter-Thin.ttf in Resources */,
 				1A0D5411C2B6438BA6761FA8 /* Fraunces-Medium.ttf in Resources */,
@@ -701,7 +697,7 @@
 		};
 		83CBBA201A601CBA00E9B192 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = A826FC242E9ECA10003F1572 /* Env.xcconfig */;
+			baseConfigurationReference = A826FC242E9ECA10003F1572 /* Local.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
@@ -816,7 +812,7 @@
 		};
 		83CBBA211A601CBA00E9B192 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = A826FC242E9ECA10003F1572 /* Env.xcconfig */;
+			baseConfigurationReference = A826FC242E9ECA10003F1572 /* Local.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
@@ -990,7 +986,7 @@
 		};
 		A826FC352E9ECB47003F1572 /* Profiling */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = A826FC242E9ECA10003F1572 /* Env.xcconfig */;
+			baseConfigurationReference = A826FC242E9ECA10003F1572 /* Local.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
