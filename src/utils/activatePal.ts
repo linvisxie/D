@@ -40,12 +40,26 @@ export const activatePalWithModel = async (
   navigation: NavigationLike,
   model?: Model,
 ): Promise<void> => {
-  if (model) {
-    await modelStore.selectModel(model);
-    await chatSessionStore.setActivePal(localPal.id);
-  } else {
-    await chatSessionStore.setActivePal(localPal.id);
-    await loadPalDefaultModel(localPal);
+  if (model) await modelStore.selectModel(model);
+
+  // Enter the character's own thread from the library. The picker inside
+  // a chat still allows deliberately changing the cast of that thread.
+  const current = chatSessionStore.sessions.find(
+    session => session.id === chatSessionStore.activeSessionId,
+  );
+  if (!current || current.activePalId !== localPal.id) {
+    const previous = chatSessionStore.sessions
+      .filter(session => session.activePalId === localPal.id)
+      .sort((left, right) => Date.parse(right.date) - Date.parse(left.date))[0];
+    if (previous) {
+      await chatSessionStore.setActiveSession(previous.id);
+    } else {
+      if (chatSessionStore.activeSessionId)
+        chatSessionStore.resetActiveSession();
+      await chatSessionStore.setActivePal(localPal.id);
+    }
   }
+
+  if (!model) await loadPalDefaultModel(localPal);
   navigation.navigate(ROUTES.CHAT);
 };

@@ -68,28 +68,14 @@ export const createStyles = (theme: Theme) =>
     },
 
     chatButton: {
-      position: 'absolute',
-      bottom: 6,
-      right: 6,
-      backgroundColor: theme.colors.surface,
-      borderRadius: 14,
-      width: 28,
-      height: 28,
+      minHeight: 44,
+      flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'center',
-      // Add subtle shadow for prominence
-      ...(theme.dark
-        ? {
-            borderWidth: 1,
-            borderColor: theme.colors.outline,
-          }
-        : {
-            shadowColor: theme.colors.shadow,
-            shadowOffset: {width: 0, height: 2},
-            shadowOpacity: 0.1,
-            shadowRadius: 4,
-            elevation: 3,
-          }),
+      gap: 6,
+      borderRadius: 12,
+      marginTop: 4,
+      backgroundColor: theme.colors.surface,
     },
     localBadge: {
       position: 'absolute',

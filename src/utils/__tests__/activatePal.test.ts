@@ -67,6 +67,32 @@ describe('activatePalWithModel', () => {
     expect(order).toEqual(['activate', 'select', 'navigate']);
   });
 
+  it('reopens the latest thread of the selected character without reassigning other threads', async () => {
+    const original = chatSessionStore.sessions;
+    const baseline = original[0];
+    try {
+      runInAction(() => {
+        chatSessionStore.sessions = [
+          {...baseline, id: 'other', activePalId: 'another-pal'},
+          {...baseline, id: 'old', activePalId: 'local-1', date: '2026-01-01'},
+          {
+            ...baseline,
+            id: 'recent',
+            activePalId: 'local-1',
+            date: '2026-03-01',
+          },
+        ];
+      });
+      await activatePalWithModel(pal(), navigation);
+      expect(chatSessionStore.setActiveSession).toHaveBeenCalledWith('recent');
+      expect(chatSessionStore.setActivePal).not.toHaveBeenCalled();
+    } finally {
+      runInAction(() => {
+        chatSessionStore.sessions = original;
+      });
+    }
+  });
+
   it('asks before switching away from a different active model', async () => {
     const alert = jest.spyOn(Alert, 'alert').mockImplementation(() => {});
     const downloaded = createModel({id: 'dl', isDownloaded: true});

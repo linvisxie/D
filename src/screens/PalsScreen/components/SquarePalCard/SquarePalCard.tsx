@@ -15,7 +15,6 @@ import {
   StarIcon,
   LockIcon,
   ChatIcon,
-  CameraIcon,
   TrashIcon,
   ShareIcon,
 } from '../../../../assets/icons';
@@ -130,11 +129,7 @@ const getDisplayContent = (pal: PalsHubPal | Pal): string => {
   return '';
 };
 
-const PalThumbnail: React.FC<{
-  pal: PalsHubPal | Pal;
-  isLocal?: boolean;
-  onChatPress: () => void;
-}> = ({pal, isLocal, onChatPress}) => {
+const PalThumbnail: React.FC<{pal: PalsHubPal | Pal}> = ({pal}) => {
   const theme = useTheme();
   const styles = createStyles(theme);
 
@@ -152,19 +147,6 @@ const PalThumbnail: React.FC<{
     Array.isArray(palColors) && palColors.length >= 2
       ? palColors
       : ['#333333', '#e5e5e6']; // Default colors
-
-  // Get chat navigation icon (combines type + chat functionality)
-  const getChatNavigationIcon = () => {
-    // Use capability-based detection for video pals (local pals only)
-    if (isLocalPal(pal) && hasVideoCapability(pal)) {
-      return (
-        <CameraIcon stroke={theme.colors.primary} width={18} height={18} />
-      );
-    }
-
-    // Default to chat icon for all other pals
-    return <ChatIcon stroke={theme.colors.primary} width={18} height={18} />;
-  };
 
   // TODO: Create gradient style, or remove gradients
   const gradientStyle = palColors
@@ -193,14 +175,6 @@ const PalThumbnail: React.FC<{
         <Text style={[styles.thumbnailText, {color: textColor}]}>
           {firstLetter}
         </Text>
-      )}
-
-      {/* Chat Navigation Button (only for downloaded/local pals) */}
-      {(isLocal ||
-        (isPalsHubPal(pal) && palStore.isPalsHubPalDownloaded(pal.id))) && (
-        <TouchableOpacity style={styles.chatButton} onPress={onChatPress}>
-          {getChatNavigationIcon()}
-        </TouchableOpacity>
       )}
 
       {/* Badges */}
@@ -364,11 +338,7 @@ export const SquarePalCard: React.FC<SquarePalCardProps> = observer(
           <Card elevation={0} style={cardStyle} contentStyle={styles.cardInner}>
             <View style={styles.cardContent}>
               {/* Thumbnail */}
-              <PalThumbnail
-                pal={pal}
-                isLocal={isLocal}
-                onChatPress={handleStartChat}
-              />
+              <PalThumbnail pal={pal} />
 
               {/* Content */}
               <View style={styles.content}>
@@ -550,6 +520,18 @@ export const SquarePalCard: React.FC<SquarePalCardProps> = observer(
               )}
           </Card>
         </TouchableOpacity>
+        {(isLocal ||
+          (isPalsHubPal(pal) && palStore.isPalsHubPalDownloaded(pal.id))) && (
+          <TouchableOpacity
+            style={styles.chatButton}
+            onPress={handleStartChat}
+            accessibilityRole="button"
+            accessibilityLabel={`和${palName}聊天`}
+            testID={`start-pal-chat-${palName}`}>
+            <ChatIcon stroke={theme.colors.primary} width={18} height={18} />
+            <Text style={{color: theme.colors.primary}}>进入对话</Text>
+          </TouchableOpacity>
+        )}
       </View>
     );
   },

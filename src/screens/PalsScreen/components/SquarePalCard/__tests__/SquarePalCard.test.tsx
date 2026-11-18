@@ -270,17 +270,10 @@ describe('SquarePalCard', () => {
       // So we just need to set models with downloaded models
       modelStore.models = [downloadedModel];
 
-      const {UNSAFE_getAllByType} = render(
+      const {getByTestId} = render(
         <SquarePalCard pal={pal} onPress={mockOnPress} isLocal={true} />,
       );
-
-      // Find chat button - it's a TouchableOpacity inside the thumbnail
-      const touchables = UNSAFE_getAllByType(
-        require('react-native').TouchableOpacity,
-      );
-      // The chat button is the second touchable (first is the card itself)
-      const chatButton = touchables[1];
-
+      const chatButton = getByTestId(`start-pal-chat-${pal.name}`);
       await act(async () => {
         fireEvent.press(chatButton);
       });
