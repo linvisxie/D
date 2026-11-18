@@ -36,12 +36,18 @@ jobs:
           app=build/D.xcarchive/Products/Applications/PocketPal.app
           test -s "$app/main.jsbundle"
           lipo "$app/PocketPal" -verify_arch arm64
+          mkdir -p build/sideload/Payload
+          ditto "$app" build/sideload/Payload/PocketPal.app
+          (cd build/sideload && /usr/bin/zip -qry -y ../../D-iPad-unsigned.ipa Payload)
+          unzip -tq D-iPad-unsigned.ipa
           ditto -c -k --keepParent build/D.xcarchive D-device-archive.zip
       - uses: actions/upload-artifact@v4
         if: inputs.device_archive
         with:
           name: D-device-archive
-          path: D-device-archive.zip
+          path: |
+            D-device-archive.zip
+            D-iPad-unsigned.ipa
       - name: Build bundled app
         if: ${{ !inputs.device_archive }}
         run: |

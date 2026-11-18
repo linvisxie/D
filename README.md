@@ -29,6 +29,7 @@ D 是一款面向 iPhone 和 iPad 的本地 AI 角色扮演应用。首次联网
 ### 首测 iPad
 
 - **Apple silicon Mac 上的 iPad 模拟器**：在 GitHub Actions 的成功构建里下载 D-iOS-simulator，解压其中的 D-simulator.zip。打开 Xcode 的 Simulator，启动 iPad，将 PocketPal.app 拖入模拟器，桌面显示名称为 D。
+- **在 iPad 本机侧载**：把真机包 D-iPad-unsigned.ipa 下载到「文件」，在签名工具中导入 IPA，选择自己的 P12 证书及配套的 mobileprovision 描述文件，签名后安装。开发或 Ad Hoc 描述文件要包含这台 iPad，并允许所用的 Bundle ID（默认 com.linvisxie.d）。签名时按描述文件授予权限；大模型的可用内存取决于设备及签名权限。首次试聊可选体积最小的模型。
 - **连接 Mac 的真实 iPad**：打开 ios/PocketPal.xcworkspace，选 PocketPal target，在 Signing & Capabilities 选择自己的 Team，再选择已连接并信任的 iPad，在 Xcode 运行 Release 配置。设备需启用开发者模式，签名账号需要支持所保留的 entitlements。
 - **团队分发**：工作流勾选 device_archive 可生成未签名的 D-device-archive。TestFlight 安装还需要项目团队完成 Apple 分发签名，并通过 App Store Connect 上传、处理和分配测试资格。
 
