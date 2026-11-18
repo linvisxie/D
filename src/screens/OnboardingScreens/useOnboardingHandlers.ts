@@ -1,4 +1,5 @@
 import {useCallback, useContext, useEffect, useRef, useState} from 'react';
+import {Alert} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 
 import {uiStore, palStore, modelStore} from '../../store';
@@ -145,6 +146,11 @@ export const useOnboardingHandlers = (step: OnboardingStep) => {
           // intentionally swallowed — downloadError already drives the UI.
         });
       }
+    } catch {
+      Alert.alert(
+        '暂时无法准备模型',
+        '请确认设备存储空间和网络连接，然后重试。你也可以稍后下载，先浏览角色。',
+      );
     } finally {
       finishingRef.current = false;
       setIsFinishing(false);

@@ -343,7 +343,7 @@ export const exportChatSessionAsMarkdown = async (
 /**
  * Helper function to share text data as a file
  */
-const shareJsonData = async (
+export const shareJsonData = async (
   jsonData: string,
   filename: string,
   mimeType: string = 'application/json',

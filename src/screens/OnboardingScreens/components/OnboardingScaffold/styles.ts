@@ -13,7 +13,7 @@ export const createStyles = (theme: Theme) =>
       backgroundColor: theme.colors.surface,
     },
     body: {
-      flex: 1,
+      flexGrow: 1,
       paddingHorizontal: theme.spacing.sm,
       paddingVertical: theme.spacing.m,
       position: 'relative',

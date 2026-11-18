@@ -823,7 +823,7 @@ export const useChatSession = (
       if (memory) systemMessages.push({role: 'system', content: memory});
     }
     const params = pal?.parameters;
-    if (params?.dPreset)
+    if (typeof params?.dPreset === 'string' && params.dPreset.trim())
       systemMessages.push({role: 'system', content: params.dPreset});
     if (params?.dWorldBook) {
       const context = worldContext(params.dWorldBook, message.text);

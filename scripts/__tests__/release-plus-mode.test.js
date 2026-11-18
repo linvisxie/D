@@ -4,7 +4,7 @@ const path = require('path');
 const ROOT = path.join(__dirname, '..', '..');
 const read = file => fs.readFileSync(path.join(ROOT, file), 'utf-8');
 
-const workflow = read('.github/workflows/release.yml');
+const workflow = read('docs/upstream-workflows/release.yml');
 const fastfile = read('android/fastlane/Fastfile');
 
 const APK = 'android/app/build/outputs/apk/prod/release/app-prod-release.apk';

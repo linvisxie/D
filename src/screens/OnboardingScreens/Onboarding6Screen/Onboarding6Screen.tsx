@@ -13,6 +13,8 @@ import {OnboardingBottomBar} from '../components/OnboardingBottomBar';
 import {ItalicAccentTitle} from '../components/ItalicAccentTitle';
 import {DeviceInfoChip} from '../components/DeviceInfoChip';
 import {ModelRadioGroup, type ModelOption} from '../components/ModelRadioGroup';
+import {Button} from 'react-native-paper';
+import {estimateMemoryFromFileSize} from '../../../utils/memoryEstimator';
 import {PipMascot} from '../illustrations/PipMascot';
 import {useOnboardingHandlers} from '../useOnboardingHandlers';
 import {createStyles} from './styles';
@@ -29,7 +31,7 @@ const formatSize = (bytes: number | undefined): string => {
 };
 
 export const Onboarding6Screen: React.FC = observer(() => {
-  const {l10n, goBack, finish, isFinishing} = useOnboardingHandlers(6);
+  const {l10n, goBack, skip, finish, isFinishing} = useOnboardingHandlers(6);
   const theme = useTheme();
   const styles = createStyles(theme);
   const t = l10n.onboarding;
@@ -37,21 +39,17 @@ export const Onboarding6Screen: React.FC = observer(() => {
   const pal = resolvePalForTopic(topic);
   const selectedId = uiStore.onboardingState.selectedModelId;
 
-  // Pre-select the Recommended (Balanced) tier on first arrival so the
-  // Download CTA is enabled immediately. Re-seed when the topic (and
-  // thus the pal) changes — the previously-picked model belongs to a
-  // different pal's list and would otherwise leave the radio in an
-  // unselectable state. User taps after that override the seed.
+  const budget = modelStore.availableMemoryCeiling;
+  const fits = (bytes: number) =>
+    budget === undefined || estimateMemoryFromFileSize(bytes) <= budget;
+  const fitting = pal.models.filter(entry => fits(entry.sizeBytes));
+  const suggested = fitting.find(entry => entry.recommended) ?? fitting[0];
+  const initial = suggested ?? pal.models[0];
   useEffect(() => {
-    const inPalList = pal.models.some(m => entryId(m) === selectedId);
-    if (!inPalList) {
-      const recommended = pal.models.find(m => m.recommended);
-      if (recommended) {
-        uiStore.setOnboardingModelId(entryId(recommended));
-      }
+    if (!pal.models.some(entry => entryId(entry) === selectedId)) {
+      uiStore.setOnboardingModelId(entryId(initial));
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pal.key]);
+  }, [pal, selectedId, initial]);
 
   const canFinish = selectedId !== null && !isFinishing;
   const isDownloaded = (id: string): boolean =>
@@ -64,6 +62,7 @@ export const Onboarding6Screen: React.FC = observer(() => {
     if (sizeSegment) {
       segments.push(sizeSegment);
     }
+    if (!fits(entry.sizeBytes)) segments.push('预计超出本机可用内存');
     if (downloaded) {
       segments.push(t.screen6.downloaded);
     }
@@ -71,7 +70,7 @@ export const Onboarding6Screen: React.FC = observer(() => {
       id,
       title: t.screen6.modelTier[entry.tier],
       subtitle: segments.join(' · '),
-      recommended: entry.recommended,
+      recommended: entry === suggested,
     };
   });
   const pickedEntry = selectedId
@@ -112,6 +111,7 @@ export const Onboarding6Screen: React.FC = observer(() => {
               recommendedBadgeLabel={t.screen6.recommended}
               onSelect={id => uiStore.setOnboardingModelId(id)}
             />
+            <Button onPress={skip}>稍后下载，先浏览角色</Button>
           </View>
         </>
       }

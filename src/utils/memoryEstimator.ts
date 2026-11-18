@@ -86,6 +86,9 @@ export type MemoryEstimateSettings = ContextInitParams & {
 const RUNTIME_OVERHEAD = 1.1;
 const RUNTIME_OVERHEAD_WITHOUT_METADATA = 1.2;
 
+export const estimateMemoryFromFileSize = (bytes: number) =>
+  bytes * RUNTIME_OVERHEAD_WITHOUT_METADATA;
+
 export function getModelMemoryRequirement(
   model: Model,
   projectionModel?: Model,
@@ -137,7 +140,7 @@ export function getModelMemoryRequirement(
   }
 
   const totalSize = model.size + mmProjSize + draftSize;
-  const estimated = totalSize * RUNTIME_OVERHEAD_WITHOUT_METADATA;
+  const estimated = estimateMemoryFromFileSize(totalSize);
 
   return estimated;
 }

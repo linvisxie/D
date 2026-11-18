@@ -67,7 +67,7 @@ const rnWhisper = fs.readFileSync(
   path.join(ROOT, 'node_modules', 'whisper.rn', 'ios', 'RNWhisper.mm'),
   'utf-8',
 );
-const ciWorkflow = read('.github/workflows/ci.yml');
+const ciWorkflow = read('docs/upstream-workflows/ci.yml');
 
 const kernelSet = parseKernelSet(metalDevice, 'GGML_METAL_LIBS');
 const kernelFiles = listKernelFiles(GGML_METAL);

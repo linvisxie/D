@@ -39,7 +39,7 @@ describe('Pal Templates', () => {
 
       expect(pal.type).toBe('local');
       expect(pal.name).toBe('');
-      expect(pal.parameterSchema).toEqual(ROLEPLAY_SCHEMA);
+      expect(pal.parameterSchema).toEqual(ROLEPLAY_SCHEMA.map(field => ({...field, required: false})));
       expect(pal.parameters).toEqual({
         world: '',
         location: '',

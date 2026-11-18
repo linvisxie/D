@@ -48,7 +48,7 @@ platform :ios do
       clean: true,
       export_options: {
         provisioningProfiles: {
-          "ai.pocketpal" => "match AppStore ai.pocketpal"
+          "com.linvisxie.d" => "match AppStore com.linvisxie.d"
         },
         signingStyle: "manual"
       }
@@ -147,7 +147,7 @@ platform :ios do
       clean: true,
       export_options: {
         provisioningProfiles: {
-          "ai.pocketpal" => "match Development ai.pocketpal"
+          "com.linvisxie.d" => "match Development com.linvisxie.d"
         },
         signingStyle: "manual"
       }

@@ -32,3 +32,26 @@ it('validates text presets, character names and lore before import', () => {
   expect(() => readCard({})).toThrow();
   expect(() => readBook({entries: [{}]})).toThrow();
 });
+
+it('applies ordered preset system prompts and omits disabled prompts and markers', () => {
+  expect(
+    readPreset({
+      prompts: [
+        {identifier: 'tone', role: 'system', content: '简短'},
+        {identifier: 'lore', role: 'system', content: '雾港'},
+        {identifier: 'sample', role: 'user', content: '示例'},
+      ],
+      prompt_order: [
+        {
+          character_id: 100001,
+          order: [
+            {identifier: 'lore'},
+            {identifier: 'sample'},
+            {identifier: 'tone', enabled: false},
+          ],
+        },
+      ],
+    }),
+  ).toBe('雾港');
+  expect(worldContext('{', '雾港')).toBe('');
+});

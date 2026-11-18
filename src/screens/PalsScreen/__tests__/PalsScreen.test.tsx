@@ -301,6 +301,7 @@ describe('PalsScreen', () => {
         withSafeArea: true,
         withBottomSheetProvider: true,
       });
+      fireEvent.press(getByTestId('filter-chip-all'));
 
       expect(getByTestId('compact-auth-bar')).toBeTruthy();
     });
@@ -325,6 +326,7 @@ describe('PalsScreen', () => {
         withSafeArea: true,
         withBottomSheetProvider: true,
       });
+      fireEvent.press(getByTestId('filter-chip-all'));
 
       // Auth bar should be visible
       expect(getByTestId('compact-auth-bar')).toBeTruthy();
@@ -376,6 +378,7 @@ describe('PalsScreen', () => {
         withSafeArea: true,
         withBottomSheetProvider: true,
       });
+      fireEvent.press(getByText('All'));
 
       await waitFor(() => {
         expect(getByText('Hub Test Pal')).toBeTruthy();
@@ -458,7 +461,7 @@ describe('PalsScreen', () => {
       });
 
       // Search should not be expanded initially
-      expect(queryByTestId('expandable-search')).toBeNull();
+      expect(queryByTestId('search-input')).toBeNull();
 
       // Press search button
       const searchButton = getByTestId('bottom-action-search');
@@ -466,7 +469,7 @@ describe('PalsScreen', () => {
 
       // Search should expand
       await waitFor(() => {
-        expect(getByTestId('expandable-search')).toBeTruthy();
+        expect(getByTestId('search-input')).toBeTruthy();
       });
     });
 
@@ -519,6 +522,7 @@ describe('PalsScreen', () => {
         withSafeArea: true,
         withBottomSheetProvider: true,
       });
+      fireEvent.press(getByText('All'));
 
       await waitFor(() => {
         expect(getByText('Test Pal')).toBeTruthy();
@@ -560,6 +564,7 @@ describe('PalsScreen', () => {
         withSafeArea: true,
         withBottomSheetProvider: true,
       });
+      fireEvent.press(getByTestId('filter-chip-all'));
 
       // Auth bar should be shown
       expect(getByTestId('compact-auth-bar')).toBeTruthy();
@@ -710,6 +715,7 @@ describe('PalsScreen', () => {
         withSafeArea: true,
         withBottomSheetProvider: true,
       });
+      fireEvent.press(getByTestId('filter-chip-all'));
       expect(getByTestId('palshub-pal-card-store-pal')).toBeTruthy();
     });
 
@@ -732,12 +738,16 @@ describe('PalsScreen', () => {
       return out;
     };
 
-    const renderSections = () =>
-      render(<PalsScreen />, {
+    const renderSections = () => {
+      const result = render(<PalsScreen />, {
         withNavigation: true,
         withSafeArea: true,
         withBottomSheetProvider: true,
       });
+
+      fireEvent.press(result.getByTestId('filter-chip-all'));
+      return result;
+    };
 
     const addStorePurchase = () =>
       runInAction(() => {

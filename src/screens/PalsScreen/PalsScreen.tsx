@@ -6,7 +6,7 @@ import {
   RefreshControl,
   useWindowDimensions,
 } from 'react-native';
-import {Button, Text} from 'react-native-paper';
+import {Button, Text, TextInput} from 'react-native-paper';
 import {observer} from 'mobx-react-lite';
 
 import {PlusIcon} from '../../assets/icons';
@@ -87,6 +87,7 @@ export const PalsScreen: React.FC = observer(() => {
 
   // Search state
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
+  const [localQuery, setLocalQuery] = useState('');
   const [searchResults, setSearchResults] = useState<PalsHubPal[]>([]);
 
   // Sheet states
@@ -124,11 +125,6 @@ export const PalsScreen: React.FC = observer(() => {
     runInitialSetup();
   }, []);
 
-  // Load initial data
-  useEffect(() => {
-    loadData();
-  }, []);
-
   const handleCreatePal = (type: 'assistant' | 'roleplay' | 'video') => {
     let newPal: Partial<Pal>;
 
@@ -150,7 +146,9 @@ export const PalsScreen: React.FC = observer(() => {
     setShowPalSheet(true);
   };
 
-  const loadData = async () => {
+  const browseOnline = activeFilter !== 'local';
+  const loadData = useCallback(async () => {
+    if (!browseOnline) return;
     try {
       // Load public pals for browsing
       await palStore.searchPalsHubPals({sortBy: 'newest', limit: 20});
@@ -163,7 +161,11 @@ export const PalsScreen: React.FC = observer(() => {
     } catch (error) {
       console.error('Error loading data:', error);
     }
-  };
+  }, [browseOnline]);
+
+  useEffect(() => {
+    void loadData();
+  }, [loadData]);
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -174,7 +176,7 @@ export const PalsScreen: React.FC = observer(() => {
     } finally {
       setRefreshing(false);
     }
-  }, []);
+  }, [loadData]);
 
   const handleActionPress = (action: BottomActionType) => {
     setActiveAction(action);
@@ -235,7 +237,7 @@ export const PalsScreen: React.FC = observer(() => {
 
   // Get filtered data based on current filter and search
   const getFilteredData = (): (PalsHubPal | Pal)[] => {
-    if (isSearchExpanded && searchResults.length > 0) {
+    if (browseOnline && isSearchExpanded && searchResults.length > 0) {
       return searchResults;
     }
 
@@ -248,8 +250,16 @@ export const PalsScreen: React.FC = observer(() => {
         const {installed, purchased, library} = ownedPals();
         return [...installed, ...purchased, ...library];
       }
-      case 'local':
-        return [...localPals, ...downloadedPals];
+      case 'local': {
+        const query = isSearchExpanded ? localQuery.trim().toLowerCase() : '';
+        return [...localPals, ...downloadedPals].filter(
+          pal =>
+            !query ||
+            [pal.name, pal.description].some(text =>
+              text?.toLowerCase().includes(query),
+            ),
+        );
+      }
       case 'video':
         return [
           ...localPals.filter(p => hasVideoCapability(p)),
@@ -274,7 +284,7 @@ export const PalsScreen: React.FC = observer(() => {
     title: string;
     data: (PalsHubPal | Pal)[];
   }> => {
-    if (isSearchExpanded && searchResults.length > 0) {
+    if (browseOnline && isSearchExpanded && searchResults.length > 0) {
       return [{title: '', data: searchResults}];
     }
 
@@ -348,7 +358,7 @@ export const PalsScreen: React.FC = observer(() => {
   return (
     <View style={styles.container}>
       {/* Compact Auth Bar - Only for unauthenticated users and when not dismissed */}
-      {!authService.isAuthenticated && showAuthBar && (
+      {browseOnline && !authService.isAuthenticated && showAuthBar && (
         <CompactAuthBar
           isAuthenticated={authService.isAuthenticated}
           onSignInPress={() => setShowAuth(true)}
@@ -358,11 +368,23 @@ export const PalsScreen: React.FC = observer(() => {
       )}
 
       {/* Expandable Search */}
-      <ExpandableSearch
-        isExpanded={isSearchExpanded}
-        onToggle={() => setIsSearchExpanded(!isSearchExpanded)}
-        onSearchResults={setSearchResults}
-      />
+      {browseOnline ? (
+        <ExpandableSearch
+          isExpanded={isSearchExpanded}
+          onToggle={() => setIsSearchExpanded(!isSearchExpanded)}
+          onSearchResults={setSearchResults}
+        />
+      ) : isSearchExpanded ? (
+        <TextInput
+          testID="search-input"
+          mode="outlined"
+          autoFocus
+          accessibilityLabel="搜索本地角色"
+          placeholder="搜索本地角色"
+          value={localQuery}
+          onChangeText={setLocalQuery}
+        />
+      ) : null}
 
       {/* Filter Chips */}
       <FilterChips

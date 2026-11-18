@@ -1,5 +1,5 @@
 import React from 'react';
-import {View} from 'react-native';
+import {ScrollView, View} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 
 import {useTheme} from '../../../../hooks';
@@ -46,15 +46,16 @@ export const OnboardingScaffold: React.FC<OnboardingScaffoldProps> = ({
       testID={`onboarding-screen-${step}`}
       style={styles.root}
       edges={['top', 'bottom']}>
-      <View
-        style={[
+      <ScrollView
+        contentContainerStyle={[
           styles.body,
           layout === 'centered' ? styles.bodyCentered : styles.bodyTop,
-        ]}>
+        ]}
+        keyboardShouldPersistTaps="handled">
         {topLeft ? <View style={styles.topLeftSlot}>{topLeft}</View> : null}
         {illustration}
         {content}
-      </View>
+      </ScrollView>
       {bottomBar ? <View style={styles.bottom}>{bottomBar}</View> : null}
     </SafeAreaView>
   );

@@ -380,8 +380,6 @@ export const PalSheet: React.FC<PalSheetProps> = observer(
             <Sheet.ScrollView
               contentContainerStyle={styles.scrollviewContainer}>
               <View style={styles.form}>
-                <RpImport />
-                <CharacterMemory />
                 <FormField
                   ref={ref => {
                     inputRefs.current.name = ref;
@@ -433,6 +431,8 @@ export const PalSheet: React.FC<PalSheetProps> = observer(
                   )}
                 />
 
+                <RpImport schema={activeSchema} />
+                <CharacterMemory />
                 <ModelNotAvailable
                   model={pal.defaultModel}
                   currentlySelectedModel={currentDefaultModel}
