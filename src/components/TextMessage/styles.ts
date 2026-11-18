@@ -38,11 +38,11 @@ export const styles = ({
         : theme.fonts.receivedMessageBodyTextStyle),
     },
     textContainer: {
-      marginHorizontal:
+      marginHorizontal: user?.id === message.author.id ? 16 : 0,
+      marginVertical:
         user?.id === message.author.id
-          ? theme.insets.messageInsetsHorizontal
-          : 0,
-      marginVertical: theme.insets.messageInsetsVertical,
+          ? 10
+          : theme.insets.messageInsetsVertical,
     },
     imageContainer: {
       marginBottom: 8,

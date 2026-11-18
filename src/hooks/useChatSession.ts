@@ -1,3 +1,4 @@
+import {worldContext} from '../utils/rpImport';
 import React, {useRef} from 'react';
 import {AccessibilityInfo} from 'react-native';
 
@@ -815,6 +816,14 @@ export const useChatSession = (
       pal,
       model: modelStore.activeModel,
     });
+
+    const params = pal?.parameters;
+    if (params?.dPreset)
+      systemMessages.push({role: 'system', content: params.dPreset});
+    if (params?.dWorldBook) {
+      const context = worldContext(params.dWorldBook, message.text);
+      if (context) systemMessages.push({role: 'system', content: context});
+    }
 
     const {cleanCompletionParams, messageInfo} = await prepareCompletion({
       imageUris: imageUris || [],

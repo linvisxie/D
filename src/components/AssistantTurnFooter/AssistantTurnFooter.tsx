@@ -6,7 +6,7 @@ import {Text} from 'react-native-paper';
 import Clipboard from '@react-native-clipboard/clipboard';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 
-import {CopyIcon} from '../../assets/icons';
+import {CheckSmIcon, CopyIcon} from '../../assets/icons';
 import {useTheme} from '../../hooks';
 import {PlayButton, shouldShowPlayButton} from '../TextMessage/PlayButton';
 import {MessageMenuButton} from '../MessageMenuButton';
@@ -38,6 +38,13 @@ export const AssistantTurnFooter: React.FC<AssistantTurnFooterProps> = observer(
     const l10n = useContext(L10nContext);
     const {copyable, interrupted, truncationLikely, completionResult} =
       message.metadata || {};
+    // Adapted from DeepSeek chat-demo's CopyButton for the native clipboard.
+    const [copied, setCopied] = React.useState(false);
+    const timer = React.useRef<ReturnType<typeof setTimeout> | undefined>(
+      undefined,
+    );
+    React.useEffect(() => () => clearTimeout(timer.current), []);
+    const ClipboardIcon = copied ? CheckSmIcon : CopyIcon;
     const timings: PersistedTurnTimings | undefined = message.metadata?.timings;
 
     if (isActiveRun && !timings && !copyable && !interrupted) {
@@ -121,8 +128,11 @@ export const AssistantTurnFooter: React.FC<AssistantTurnFooterProps> = observer(
       if (message.type !== 'text' && message.type !== 'assistant_turn') {
         return;
       }
+      if (copied) return;
       ReactNativeHapticFeedback.trigger('impactLight', hapticOptions);
       Clipboard.setString(derivedText(message).trim());
+      setCopied(true);
+      timer.current = setTimeout(() => setCopied(false), 1000);
     };
 
     return (
@@ -138,7 +148,7 @@ export const AssistantTurnFooter: React.FC<AssistantTurnFooterProps> = observer(
               componentStyles.copyButton,
               !showPlay && componentStyles.copyLeading,
             ]}>
-            <CopyIcon
+            <ClipboardIcon
               stroke={theme.colors.textSecondary}
               width={16}
               height={16}

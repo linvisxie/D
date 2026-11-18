@@ -17,6 +17,8 @@ import {useForm, FormProvider, Controller} from 'react-hook-form';
 import {useTheme} from '../../hooks';
 
 import {createStyles} from './styles';
+import {RpImport} from './RpImport';
+import {readBook} from '../../utils/rpImport';
 import {FormField} from './FormField';
 import type {PalFormData} from './types';
 import {ColorSection} from './ColorSection';
@@ -106,6 +108,19 @@ export const PalSheet: React.FC<PalSheetProps> = observer(
         generatingPrompt: z.string().nullable().optional(),
         completionSettings: z.record(z.string(), z.any()).optional(),
         talents: z.array(z.string()).optional(),
+        dPreset: z.string().optional(),
+        dWorldBook: z
+          .string()
+          .optional()
+          .refine(value => {
+            if (!value?.trim()) return true;
+            try {
+              readBook(JSON.parse(value));
+              return true;
+            } catch {
+              return false;
+            }
+          }, '请检查世界书 JSON 和 entries 条目'),
         greetingText: z.string().optional(),
         suggestedPrompts: z.array(z.string()).optional(),
       });
@@ -241,6 +256,10 @@ export const PalSheet: React.FC<PalSheetProps> = observer(
           parameters[param.key] = data[param.key];
         });
 
+        if (data.dPreset?.trim()) parameters.dPreset = data.dPreset.trim();
+        if (data.dWorldBook?.trim())
+          parameters.dWorldBook = data.dWorldBook.trim();
+
         // For templated pals, systemPrompt should always contain the template (with placeholders)
         // The rendered prompt is generated on-demand, not stored
         const systemPrompt = data.systemPrompt;
@@ -348,6 +367,7 @@ export const PalSheet: React.FC<PalSheetProps> = observer(
             <Sheet.ScrollView
               contentContainerStyle={styles.scrollviewContainer}>
               <View style={styles.form}>
+                <RpImport />
                 <FormField
                   ref={ref => {
                     inputRefs.current.name = ref;

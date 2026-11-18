@@ -142,6 +142,7 @@ const App = observer(() => {
                     <SwitchPoint
                       drawer={
                         <Drawer.Navigator
+                          initialRouteName={ROUTES.PALS}
                           screenOptions={{
                             headerLeft: () => <HeaderLeft />,
                             drawerStyle: {

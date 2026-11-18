@@ -50,7 +50,7 @@ export const createNewRoleplayPal = (): Partial<Pal> => ({
     situation: '',
     toneStyle: '',
   },
-  parameterSchema: ROLEPLAY_SCHEMA,
+  parameterSchema: ROLEPLAY_SCHEMA.map(field => ({...field, required: false})),
   source: 'local',
   capabilities: {},
 });

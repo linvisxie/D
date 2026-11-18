@@ -83,7 +83,7 @@ export const PalsScreen: React.FC = observer(() => {
 
   // Navigation state
   const [activeAction, setActiveAction] = useState<BottomActionType>('search');
-  const [activeFilter, setActiveFilter] = useState<FilterType>('all');
+  const [activeFilter, setActiveFilter] = useState<FilterType>('local');
 
   // Search state
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);

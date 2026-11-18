@@ -13,23 +13,16 @@ export const styles = ({
   roundBorder: boolean;
   theme: Theme;
 }) => {
+  const radius = currentUserIsAuthor ? 22 : theme.borders.messageBorderRadius;
   return StyleSheet.create({
     contentContainer: {
       backgroundColor:
         !currentUserIsAuthor || message.type === 'image'
           ? 'transparent' //theme.colors.secondary
           : theme.colors.authorBubbleBackground,
-      borderBottomLeftRadius:
-        currentUserIsAuthor || roundBorder
-          ? theme.borders.messageBorderRadius
-          : 0,
-      borderBottomRightRadius: currentUserIsAuthor
-        ? roundBorder
-          ? theme.borders.messageBorderRadius
-          : 0
-        : theme.borders.messageBorderRadius,
+      borderRadius: radius,
+      borderBottomLeftRadius: currentUserIsAuthor || roundBorder ? radius : 0,
       borderColor: 'transparent',
-      borderRadius: theme.borders.messageBorderRadius,
       overflow: 'hidden',
     },
     dateHeader0: {

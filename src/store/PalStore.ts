@@ -48,8 +48,6 @@ import type {Model} from '../utils/types';
 import {downloadPalThumbnail, deletePalThumbnail} from '../utils/imageUtils';
 
 // Track each built-in separately so future defaults can still be introduced.
-// TODO: when adding another built-in pal, extract a shared seed-once helper
-// (check key, find existing, create, set key) instead of a third copy.
 const LOOKIE_SEEDED_KEY = 'PalStore.builtin.Lookie.seeded';
 const PIP_SEEDED_KEY = 'PalStore.builtin.Pip.seeded';
 
@@ -161,6 +159,15 @@ class PalStore {
 
       // Initialize Pip pal (idempotent — see initializePipPal).
       await this.initializePipPal();
+      await this.seedTextPal('D.builtin.liya.v1', {
+        name: '莉娅',
+        description: '雾港末班渡船的领航员，收集没人认领的旧船票。',
+        systemPrompt:
+          '你是雾港的领航员莉娅。用简短的对白和具体动作推进场景，把旅客的行动和决定留给对方。',
+        greeting: {
+          text: '莉娅把一张湿漉漉的船票压在灯下。“你也收到这张票了？奇怪，这条航线十年前就停了。”',
+        },
+      });
 
       // Register talent engines (idempotent)
       registerDefaultTalents();
@@ -870,40 +877,40 @@ class PalStore {
    * recommended-pal picker) survives subsequent app starts.
    */
   private async initializePipPal(): Promise<void> {
+    await this.seedTextPal(PIP_SEEDED_KEY, {
+      name: 'Pip',
+      description:
+        'A friendly general-purpose pal that runs entirely on your phone.',
+      systemPrompt:
+        'You are Pip, a friendly and helpful assistant who runs locally on the user’s phone. Keep replies concise and warm.',
+    });
+  }
+
+  private async seedTextPal(
+    key: string,
+    character: Pick<Pal, 'name' | 'description' | 'systemPrompt' | 'greeting'>,
+  ) {
     try {
-      if ((await AsyncStorage.getItem(PIP_SEEDED_KEY)) === 'true') {
-        return;
+      if ((await AsyncStorage.getItem(key)) === 'true') return;
+      if (
+        !this.pals.some(p => p.name === character.name && p.source === 'local')
+      ) {
+        await this.addPal({
+          type: 'local',
+          ...character,
+          isSystemPromptChanged: false,
+          useAIPrompt: false,
+          defaultModel: undefined,
+          parameters: {},
+          parameterSchema: [],
+          capabilities: {},
+          color: ['#0E0D0C', '#FAFAFA'],
+          source: 'local',
+        });
       }
-
-      const existing = this.pals.find(
-        p => p.name === 'Pip' && p.source === 'local',
-      );
-      if (existing) {
-        await AsyncStorage.setItem(PIP_SEEDED_KEY, 'true');
-        return;
-      }
-
-      const palData: Omit<Pal, 'id' | 'created_at' | 'updated_at'> = {
-        type: 'local',
-        name: 'Pip',
-        description:
-          'A friendly general-purpose pal that runs entirely on your phone.',
-        systemPrompt:
-          'You are Pip, a friendly and helpful assistant who runs locally on the user’s phone. Keep replies concise and warm.',
-        isSystemPromptChanged: false,
-        useAIPrompt: false,
-        defaultModel: undefined,
-        parameters: {},
-        parameterSchema: [],
-        capabilities: {},
-        color: ['#0E0D0C', '#FAFAFA'],
-        source: 'local',
-      };
-
-      await this.addPal(palData);
-      await AsyncStorage.setItem(PIP_SEEDED_KEY, 'true');
+      await AsyncStorage.setItem(key, 'true');
     } catch (error) {
-      console.error('Error initializing Pip pal:', error);
+      console.error('Error initializing built-in pal', character.name, error);
     }
   }
 }
