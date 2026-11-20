@@ -3,7 +3,6 @@ import {
   Alert,
   FlatList,
   Image,
-  ImageBackground,
   Pressable,
   StyleSheet,
   Text,
@@ -102,7 +101,7 @@ export const StoryHome = observer(() => {
       testID={id}
       onPress={onPress}
       style={[styles.action, {backgroundColor: panel, borderColor: muted}]}>
-      <Text style={{color: ink, fontWeight: '600'}}>{label}</Text>
+      <Text style={[styles.actionLabel, {color: ink}]}>{label}</Text>
     </Pressable>
   );
   return (
@@ -115,10 +114,12 @@ export const StoryHome = observer(() => {
         ListHeaderComponent={
           <View style={styles.stack}>
             {featured && !searching && (
-              <ImageBackground
-                source={harbor}
-                resizeMode="cover"
-                style={[styles.hero, {minHeight: width >= 700 ? 360 : 260}]}>
+              <View style={[styles.hero, width >= 700 && styles.wideHero]}>
+                <Image
+                  source={harbor}
+                  style={styles.heroArt}
+                  accessible={false}
+                />
                 <LinearGradient
                   colors={['#071c2a00', '#081e2ce6']}
                   style={StyleSheet.absoluteFill}
@@ -146,7 +147,7 @@ export const StoryHome = observer(() => {
                     </Text>
                   </Pressable>
                 </View>
-              </ImageBackground>
+              </View>
             )}
             {recent && recentPal && !searching && (
               <Pressable
@@ -271,7 +272,19 @@ const styles = StyleSheet.create({
     paddingBottom: 48,
   },
   stack: {gap: 14, marginBottom: 14},
+  actionLabel: {fontWeight: '600'},
+  wideHero: {minHeight: 360},
+  heroArt: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: undefined,
+    aspectRatio: 1.5,
+    minHeight: '100%',
+  },
   hero: {
+    minHeight: 260,
     borderRadius: 20,
     overflow: 'hidden',
     justifyContent: 'flex-end',

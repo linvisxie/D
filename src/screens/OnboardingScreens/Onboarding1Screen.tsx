@@ -47,5 +47,5 @@ export const Onboarding1Screen: React.FC = observer(() => {
 });
 
 const styles = StyleSheet.create({
-  harbor: {width: '94%', maxWidth: 760, aspectRatio: 2.15, borderRadius: 18},
+  harbor: {width: '94%', maxWidth: 620, aspectRatio: 1.5, borderRadius: 18},
 });
