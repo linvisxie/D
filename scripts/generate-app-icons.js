@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Writes every launcher icon output (Android adaptive + legacy, iOS AppIcon)
- * from the SVG sources in scripts/app-icon/.
+ * from the Android SVGs and iOS monogram in scripts/app-icon/.
  *
  * Usage: node scripts/generate-app-icons.js [--preview <dir outside the repo>]
  */
@@ -550,26 +550,22 @@ function opaqueRgbPng({width, height, pixels}, label) {
   ]);
 }
 
-function iosCompositions(trees) {
-  return {
-    'AppIcon.png': composition(trees.foregroundLight, {
-      background: BACKGROUND_LIGHT,
-    }),
-    'AppIcon-dark.png': composition(trees.foregroundDark, {
-      background: BACKGROUND_DARK,
-    }),
-    'AppIcon-tinted.png': composition(trees.monochrome, {
-      background: TINT_BACKGROUND,
-      recolor: TINT_FOREGROUND,
-    }),
-  };
+function iosIconSvg(mark, background, foreground) {
+  return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1024 1024">
+    <defs><mask id="mark" maskUnits="userSpaceOnUse" x="0" y="0" width="1024" height="1024"><image width="1024" height="1024" xlink:href="data:image/png;base64,${mark}"/></mask></defs>
+    <rect width="1024" height="1024" fill="${background}"/><rect width="1024" height="1024" fill="${foreground}" mask="url(#mark)"/></svg>`;
 }
 
-function buildRasterOutputs(trees) {
+function buildRasterOutputs(trees, mark) {
   const {Resvg} = require('@resvg/resvg-js');
   const outputs = {};
-  for (const [filename, svg] of Object.entries(iosCompositions(trees))) {
-    const image = render(Resvg, svg, IOS_SIZE);
+  const ios = {
+    'AppIcon.png': ['#234741', '#F5DBAD'],
+    'AppIcon-dark.png': ['#102927', '#F5DBAD'],
+    'AppIcon-tinted.png': ['#181818', '#EDEDED'],
+  };
+  for (const [filename, colors] of Object.entries(ios)) {
+    const image = render(Resvg, iosIconSvg(mark, ...colors), IOS_SIZE);
     outputs[`${APPICONSET}/${filename}`] = opaqueRgbPng(image, filename);
   }
   const legacy = {
@@ -592,7 +588,7 @@ function buildRasterOutputs(trees) {
   return outputs;
 }
 
-function buildPreviews(trees) {
+function buildPreviews(trees, mark) {
   const {Resvg} = require('@resvg/resvg-js');
   const guides = `<g fill="none" stroke="#FF00FF" stroke-width="0.4"><rect width="112" height="112"/><circle cx="56" cy="56" r="${SAFE_RADIUS}"/></g>`;
   const fullCanvas = {viewBox: CANVAS_VIEWBOX, overlay: guides};
@@ -625,11 +621,7 @@ function buildPreviews(trees) {
     recolor: '#1F3760',
     mask: CIRCLE_MASK,
   });
-  const tinted = composition(trees.monochrome, {
-    background: TINT_BACKGROUND,
-    recolor: TINT_FOREGROUND,
-    mask: ROUNDED_MASK,
-  });
+  const tinted = iosIconSvg(mark, '#181818', '#EDEDED');
   for (const size of [1024, 144]) {
     svgs[`android-monochrome-themed-${size}.png`] = [themed, size];
   }
@@ -708,8 +700,14 @@ function generate({root = REPO_ROOT, previewDir} = {}) {
   const trees = Object.fromEntries(
     Object.entries(sources).map(([key, text]) => [key, parseSvg(text)]),
   );
-  const outputs = {...buildTextOutputs(sources), ...buildRasterOutputs(trees)};
-  const previews = previewDir ? buildPreviews(trees) : {};
+  const mark = fs
+    .readFileSync(path.join(root, SOURCE_DIR, 'd-monogram.png'))
+    .toString('base64');
+  const outputs = {
+    ...buildTextOutputs(sources),
+    ...buildRasterOutputs(trees, mark),
+  };
+  const previews = previewDir ? buildPreviews(trees, mark) : {};
   for (const file of staleAppIcons(root, outputs)) {
     fs.rmSync(file);
   }

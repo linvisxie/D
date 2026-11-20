@@ -16,6 +16,15 @@ const {
   buildTextOutputs,
 } = require(GENERATOR_PATH);
 
+function copyIosMark(root) {
+  const relative = path.join(SOURCE_DIR, 'd-monogram.png');
+  fs.mkdirSync(path.dirname(path.join(root, relative)), {recursive: true});
+  fs.copyFileSync(
+    path.join(__dirname, '..', '..', relative),
+    path.join(root, relative),
+  );
+}
+
 const canvas = body =>
   `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-28 -28 168 168">${body}</svg>`;
 
@@ -262,6 +271,7 @@ describe('generate', () => {
 
   beforeEach(() => {
     root = fs.mkdtempSync(path.join(os.tmpdir(), 'app-icons-'));
+    copyIosMark(root);
   });
 
   afterEach(() => {
@@ -1156,38 +1166,35 @@ describe('committed PNG content', () => {
     decodePng(fs.readFileSync(path.join(repoRoot, relative)));
   const BACKDROP = [1, 1];
   const PAL_BODY = [49, 33];
-  const RIGHT_EYE = [66, 46.5];
   const POCKET = [88, 92];
 
   it.each([
-    ['AppIcon.png', '#FFFFFF', '#F5DBBC', '#000000'],
-    ['AppIcon-dark.png', '#181715', '#A86C34', '#000000'],
-    ['AppIcon-tinted.png', '#000000', '#FFFFFF', '#000000'],
+    ['AppIcon.png', '#234741', '#F5DBAD'],
+    ['AppIcon-dark.png', '#102927', '#F5DBAD'],
+    ['AppIcon-tinted.png', '#181818', '#EDEDED'],
   ])(
-    '%s paints backdrop %s, pal %s and eye %s with no transparency chunk',
-    (name, backdrop, pal, eye) => {
+    '%s paints the D stem and counter on an opaque background',
+    (name, backdrop, letter) => {
       const icon = png(`${APPICONSET}/${name}`);
       expect(icon.chunks).toEqual(['IHDR', 'IDAT', 'IEND']);
       expect(icon.at(...BACKDROP)).toEqual({color: backdrop, alpha: 255});
-      expect(icon.at(...PAL_BODY)).toEqual({color: pal, alpha: 255});
-      expect(icon.at(...RIGHT_EYE)).toEqual({color: eye, alpha: 255});
+      expect(icon.at(33, 50)).toEqual({color: letter, alpha: 255});
+      expect(icon.at(55, 50)).toEqual({color: backdrop, alpha: 255});
     },
   );
 
   it.each(['mdpi', 'hdpi', 'xhdpi', 'xxhdpi', 'xxxhdpi'])(
-    'masks the %s legacy icons as a rounded square and a circle over the iOS composition',
+    'masks the %s Android icons as a rounded square and a circle',
     density => {
       const square = png(`${ANDROID_RES}/mipmap-${density}/ic_launcher.png`);
       const round = png(
         `${ANDROID_RES}/mipmap-${density}/ic_launcher_round.png`,
       );
-      const ios = png(`${APPICONSET}/AppIcon.png`);
       for (const icon of [square, round]) {
         expect(icon.colorType).toBe(6);
         expect(icon.at(0, 0).alpha).toBe(0);
-        for (const point of [PAL_BODY, POCKET]) {
-          expect(icon.at(...point)).toEqual(ios.at(...point));
-        }
+        expect(icon.at(...PAL_BODY)).toEqual({color: '#F5DBBC', alpha: 255});
+        expect(icon.at(...POCKET)).toEqual({color: '#000000', alpha: 255});
       }
       expect(square.at(14, 14)).toEqual({color: '#FFFFFF', alpha: 255});
       expect(round.at(14, 14).alpha).toBe(0);
@@ -1215,6 +1222,7 @@ describe('generate from the committed sources', () => {
 
   beforeAll(() => {
     root = fs.mkdtempSync(path.join(os.tmpdir(), 'app-icons-real-'));
+    copyIosMark(root);
     previewDir = fs.mkdtempSync(path.join(os.tmpdir(), 'app-icons-preview-'));
     for (const file of Object.values(SOURCE_FILES)) {
       const target = path.join(root, SOURCE_DIR, file);
@@ -1309,6 +1317,7 @@ describe('command line', () => {
 
   beforeEach(() => {
     root = fs.mkdtempSync(path.join(os.tmpdir(), 'app-icons-cli-'));
+    copyIosMark(root);
     const sources = {
       foregroundLight: canvas(SQUARE),
       foregroundDark: canvas(SQUARE),
@@ -1353,6 +1362,7 @@ describe('generate on failure', () => {
 
   it('refuses a subfolder in the appiconset before writing anything', () => {
     root = fs.mkdtempSync(path.join(os.tmpdir(), 'app-icons-subfolder-'));
+    copyIosMark(root);
     for (const key of Object.keys(SOURCE_FILES)) {
       const target = path.join(root, SOURCE_DIR, SOURCE_FILES[key]);
       fs.mkdirSync(path.dirname(target), {recursive: true});
@@ -1376,6 +1386,7 @@ describe('generate on failure', () => {
 
   it('leaves existing outputs and stale icons untouched', () => {
     root = fs.mkdtempSync(path.join(os.tmpdir(), 'app-icons-keep-'));
+    copyIosMark(root);
     const sources = {
       foregroundLight: canvas(SQUARE),
       foregroundDark: canvas('<rect width="1" height="1"/>'),
