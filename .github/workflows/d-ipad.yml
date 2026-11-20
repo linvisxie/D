@@ -21,6 +21,8 @@ jobs:
   acceptance:
     runs-on: ${{ inputs.runner }}
     timeout-minutes: 35
+    env:
+      MAESTRO_DRIVER_STARTUP_TIMEOUT: 360000
     steps:
       - uses: actions/checkout@v5
       - uses: actions/download-artifact@v4
