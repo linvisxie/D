@@ -28,9 +28,11 @@ D 是一款面向 iPhone 和 iPad 的本地 AI 角色扮演应用。首次联网
 
 ### 首测 iPad
 
-用 iPad 登录本仓库后，可在 [D 首测 2.1 下载页](https://github.com/linvisxie/D/releases/tag/ipad-preview-2.1) 保存真机 IPA。
+用有本仓库访问权限的 GitHub 账号登录后，可在 iPad 上下载 2.2 真机包。在发行页展开「资源 / Assets」也能找到同一份 IPA。[下载 D-iPad-unsigned.ipa](https://github.com/linvisxie/D/releases/download/ipad-preview-2.2/D-iPad-unsigned.ipa) · [查看 2.2 发行页](https://github.com/linvisxie/D/releases/tag/ipad-preview-2.2)
 
-[iPad 模拟器验收记录](https://github.com/linvisxie/D/actions/runs/44361348093)覆盖首次启动、从欢迎页下载 Gemma 3 1B Q4_K_M、进入莉娅的对话和重启恢复历史。测试核对模型文件的 SHA-256，并从本地数据库确认回复属于该角色、来源为本地推理。这次运行的首个 token 用时约 1.55 秒，生成速度约 30 token/秒。真机表现随 iPad 型号、内存和温度变化。
+2.2 已在 iPad 模拟器上从欢迎页进入书房，下载并校验 Gemma 3 1B Q4_K_M，与莉娅对话，重启后恢复同一段历史。数据库核实该条回复来自本地模型。此次生成 350 个 token，首个 token 用时 5.4 秒，平均约 18.5 token/秒。真机表现取决于 iPad 型号、内存和温度。[验收记录](https://github.com/linvisxie/D/actions/runs/44651097559)
+
+[故事书房截图](docs/previews/ipad-story-home-2.2.jpg) · [重启后的角色对话截图](docs/previews/ipad-role-chat-2.2.jpg)
 
 - **Apple silicon Mac 上的 iPad 模拟器**：在 GitHub Actions 的成功构建里下载 D-iOS-simulator，解压其中的 D-simulator.zip。打开 Xcode 的 Simulator，启动 iPad，将 PocketPal.app 拖入模拟器，桌面显示名称为 D。
 - **在 iPad 本机侧载**：把真机包 D-iPad-unsigned.ipa 下载到「文件」，在签名工具中导入 IPA，选择自己的 P12 证书及配套的 mobileprovision 描述文件，签名后安装。开发或 Ad Hoc 描述文件要包含这台 iPad，并允许所用的 Bundle ID（默认 com.linvisxie.d）。签名时按描述文件授予权限；大模型的可用内存取决于设备及签名权限。首次试聊可选体积最小的模型。
